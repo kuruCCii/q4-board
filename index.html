@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>媒介投放项目总看板 · Q4</title>
+<style>
+:root{
+  --bg:#f4f6f9; --card:#ffffff; --line:#e4e8ef; --line2:#eef1f6;
+  --tx:#1f2329; --tx2:#646a73; --tx3:#8f959e;
+  --blue:#2f5cad; --blue-bg:#eaf1fb;
+  --green:#2e7d32; --green-bg:#e6f2e8;
+  --amber:#9a6700; --amber-bg:#fdf3d8;
+  --yellow-bg:#fff3b8; --yellow-tx:#7a5b00;
+  --red:#b3261e; --red-bg:#fbeae9;
+  --purple:#6b4fbb; --purple-bg:#efeafa;
+  --dy:#161823; --xhs:#e0303f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#f4f6f9;color-scheme:light}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6}
+a{color:var(--blue);text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
+
+/* 口令门 */
+th.s{cursor:pointer;user-select:none;white-space:nowrap}
+th.s:hover{color:var(--tx)}
+th.s .car{display:inline-block;margin-left:3px;font-size:9px;opacity:.3;transform:translateY(-1px)}
+th.s.on .car{opacity:1;color:var(--blue)}
+th.s.on{color:var(--blue)}
+.uvgap{margin:2px 0 10px;padding:8px 12px;border-radius:8px;background:#fff8e6;border:1px solid #f4e0a8;color:#8a5a00;font-size:12px;line-height:1.65}
+.uvgap b{color:#7a4e00}
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50}
+#gate .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:36px 40px;width:360px;text-align:center}
+#gate h1{font-size:17px;font-weight:600;margin-bottom:6px}
+#gate p{color:var(--tx2);font-size:13px;margin-bottom:18px}
+#gate input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;outline:none;text-align:center;letter-spacing:2px}
+#gate input:focus{border-color:var(--blue)}
+#gate button{margin-top:12px;width:100%;padding:10px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:14px;cursor:pointer}
+#gate .err{color:var(--red);font-size:12px;margin-top:10px;min-height:16px}
+
+header.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+header.top h1{font-size:20px;font-weight:600}
+header.top .sub{color:var(--tx3);font-size:13px}
+.updated{color:var(--tx3);font-size:12px;margin-bottom:18px}
+.crumb{margin-bottom:14px;font-size:13px}
+.crumb a{cursor:pointer}
+
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .k{color:var(--tx2);font-size:12px;margin-bottom:4px}
+.stat .v{font-size:21px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:12px;color:var(--tx3);font-weight:400}
+.stat .s{font-size:12px;color:var(--tx3);margin-top:2px}
+
+/* 实时数据卡片 */
+.rt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.rt-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.rt-head .t{font-size:14px;font-weight:600}
+.rt-head .t::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#d94b3d;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 3px rgba(217,75,61,.15)}
+.rt-head .s{font-size:11px;color:var(--tx3)}
+.rt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rt-cell{background:#fafbfd;border:1px solid var(--line2);border-radius:9px;padding:11px 13px}
+.rt-cell .k{font-size:12px;color:var(--tx2)}
+.rt-cell .v{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--blue);margin-top:1px}
+.rt-cell .v.zero{color:var(--tx3)}
+.rt-cell .s{font-size:11px;color:var(--tx3);margin-top:1px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--blue)}
+.card .head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card .head h3{font-size:16px;font-weight:600}
+.card .head .go{color:var(--tx3);font-size:13px;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 4px}
+.chip{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blue-bg);color:var(--blue)}
+.chip.st{background:var(--green-bg);color:var(--green)}
+.chip.cat{background:var(--purple-bg);color:var(--purple)}
+.meta{color:var(--tx3);font-size:12px;margin-bottom:12px}
+.meter{margin:9px 0 0}
+.meter .row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.meter .row .lab{color:var(--tx2)}
+.meter .row .num{font-variant-numeric:tabular-nums;color:var(--tx)}
+.bar{height:8px;background:var(--line2);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:6px;background:var(--blue)}
+.bar>i.ok{background:var(--green)}
+.bar>i.warn{background:#d9a514}
+.bar>i.low{background:#d85a30}
+
+.dhead h1{font-size:20px;font-weight:600;display:inline}
+.dmeta{color:var(--tx2);font-size:13px;margin:8px 0 16px}
+.dmeta span{margin-right:16px}
+.dmeta .dnote{display:block;margin:6px 0 0;font-size:11px;color:var(--tx3);line-height:1.7}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+section>h2{font-size:15px;font-weight:600;margin-bottom:12px;color:var(--tx)}
+section>h2 .hint{font-size:12px;font-weight:400;color:var(--tx3);margin-left:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--tx2);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line2);vertical-align:middle;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+td.cat{color:var(--tx2)}
+td.metric{color:var(--tx);font-weight:500}
+.pbar{width:100px;height:7px;background:var(--line2);border-radius:6px;overflow:hidden;display:inline-block;vertical-align:middle}
+.pbar>i{display:block;height:100%;border-radius:6px;background:var(--blue)}
+.pbar>i.ok{background:var(--green)}
+.pbar>i.warn{background:#d9a514}
+.pbar>i.low{background:#d85a30}
+.pbar.full{width:100%;display:block;height:8px}
+td .pv{margin-left:8px;font-size:12px;color:var(--tx2)}
+td.note{color:var(--tx3);font-size:12px;max-width:260px}
+.plat-row td{background:#fafbfc;font-weight:600}
+
+.kpi-hero{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.hero{border:1px solid var(--line2);border-radius:10px;padding:16px 18px;background:var(--card)}
+.hero .k{font-size:12px;color:var(--tx2);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.hero .k .go{color:var(--blue);font-size:11px}
+.hero .v{font-size:23px;font-weight:600;font-variant-numeric:tabular-nums}
+.hero .t{font-size:12px;color:var(--tx3);margin-top:2px}
+.hero .bwrap{margin-top:10px;display:flex;align-items:center;gap:8px}
+.hero .bwrap .pbar.full{flex:1 1 auto;width:auto}
+.hero .bwrap .pct{font-size:12px;color:var(--tx2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.hero.click{cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.hero.click:hover{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+
+.metric-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.metric-cell{border:1px solid var(--line2);border-radius:10px;padding:14px 16px}
+.metric-cell .k{font-size:12px;color:var(--tx2);margin-bottom:4px}
+.metric-cell .v{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;word-break:break-all}
+.metric-cell .t{font-size:11px;color:var(--tx3);margin-top:2px}
+.textblock{white-space:pre-wrap;font-size:13px;color:var(--tx);line-height:1.8}
+.two-col{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+.two-col section{margin-bottom:0}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chart{border:1px solid var(--line2);border-radius:10px;padding:14px 14px 8px}
+.chart .ct{font-size:13px;font-weight:500;margin-bottom:2px}
+.chart .cs{font-size:11px;color:var(--tx3);margin-bottom:8px}
+.chart svg{display:block;width:100%;height:150px}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:22px;color:var(--tx3);font-size:12px;text-align:center;line-height:1.9}
+.toplink{margin-left:auto;font-size:12px;color:var(--blue);cursor:pointer;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 10px;white-space:nowrap}
+.toplink:hover{background:var(--blue-bg);border-color:#c8d9f3}
+.gdesc{font-size:12px;color:var(--tx2);line-height:1.75;margin:2px 0 10px}
+.gdoc{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:10px;overflow:hidden}
+.gdoc .gdt{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#fafbfd;border-bottom:1px solid var(--line2)}
+.gdoc .gdt a{font-size:13px;font-weight:600;color:var(--blue);text-decoration:none}
+.gdoc .gdt a:hover{text-decoration:underline}
+.gdoc .gdc{font-size:11px;color:var(--tx3);margin-left:auto;white-space:nowrap}
+.gdoc .gdt2{font-size:13px;font-weight:600;color:var(--amber)}
+table.gt{width:100%;border-collapse:collapse;font-size:12px}
+table.gt th{text-align:left;font-weight:500;color:var(--tx3);background:#fcfcfe;border-bottom:1px solid var(--line2);padding:7px 12px;font-size:11px;white-space:nowrap}
+table.gt td{padding:8px 12px;border-bottom:1px solid var(--line2);color:var(--tx);vertical-align:top;line-height:1.6}
+table.gt tr:last-child td{border-bottom:none}
+table.gt .gs{width:26%;min-width:190px}
+table.gt .sname{display:block;font-weight:500}
+table.gt .sid{display:inline-block;margin-top:2px;font-size:10px;color:var(--tx3);background:#f2f4f7;border-radius:4px;padding:0 5px;letter-spacing:.3px}
+table.gt .gf{color:var(--tx2);width:32%}
+table.gt .gfr{color:var(--tx3);white-space:nowrap;width:90px}
+.glocal{border-color:#f1dfae;background:#fffdf6}
+.glocal .gdt{background:#fff8e6;border-bottom-color:#f4e6c0}
+.gdel{color:var(--red);cursor:pointer;font-size:12px}
+.gapbox{margin:6px 0 18px;padding:10px 14px;border-radius:10px;background:var(--amber-bg);border:1px solid #f0e0b0;font-size:12px;color:#6b4e00;line-height:1.75}
+.gapbox b{display:block;margin-bottom:2px;color:#5a4200}
+.gapbox ul{margin:0;padding-left:16px}
+.gform{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.gform label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--tx3);width:calc(33.333% - 7px);min-width:200px}
+.gform label.wide{width:100%}
+.gform input,.gform select{border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:12px;color:var(--tx);background:#fff;outline:none}
+.gform input:focus,.gform select:focus{border-color:var(--blue)}
+.gbtns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer}
+.btn:hover{background:#f7f9fc}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{filter:brightness(1.05)}
+.foot{margin-top:26px;color:var(--tx3);font-size:12px;text-align:center;line-height:1.9}
+/* 投流诊断筛选器 */
+.fbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:16px}
+.fbar .fg{font-size:12px;color:var(--tx3);margin:0 2px 0 10px}
+.fbar .fg:first-child{margin-left:0}
+.fchip{font-size:12px;padding:4px 11px;border-radius:20px;background:#f2f4f7;color:var(--tx2);cursor:pointer;border:1px solid transparent;transition:all .12s;user-select:none}
+.fchip:hover{background:#e9edf4}
+.fchip.on{background:var(--blue-bg);color:var(--blue);border-color:#c3d6f2;font-weight:500}
+.adsul{padding-left:18px;font-size:13px;line-height:2}
+
+/* 发布内容入口 */
+.entry{display:flex;gap:12px}
+.entry .e{flex:1 1 0;min-width:0;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line2);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s}
+.entry .e:hover{border-color:var(--blue);background:#fbfcfe}
+.entry .e .l{display:flex;align-items:center;gap:10px;min-width:0}
+.entry .e .l>div{min-width:0}
+.plat-dot{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600}
+.plat-dot.dy{background:var(--dy)}
+.plat-dot.xhs{background:var(--xhs)}
+.entry .e .nm{font-size:14px;font-weight:500}
+.entry .e .ct{font-size:12px;color:var(--tx3)}
+.entry .e .arw{color:var(--tx3);font-size:13px}
+
+/* 内容子页面 */
+.psection{margin-bottom:26px}
+.phead{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.phead .nm{font-size:17px;font-weight:600}
+.phead .ct{font-size:12px;color:var(--tx3)}
+.phead .tagb{font-size:11px;padding:2px 8px;border-radius:20px;background:#f2f4f7;color:var(--tx2);margin-left:auto}
+.typeg{margin-bottom:18px}
+.typeg>h4{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.typeg>h4 .n{font-weight:400;color:var(--tx3);font-size:11px;background:#f2f4f7;border-radius:20px;padding:1px 7px}
+.typeg>h4::before{content:"";width:3px;height:13px;border-radius:2px;background:var(--blue);display:inline-block}
+.typeg>h4 .tm{margin-left:auto;display:flex;gap:14px;font-weight:400;font-size:11px;color:var(--tx2);font-variant-numeric:tabular-nums}
+.typeg>h4 .tm .tmi{white-space:nowrap}
+.typeg>h4 .tm b{font-weight:500;color:var(--tx3);margin-right:5px;font-size:11px}
+.ccards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ccard{display:flex;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--card);transition:border-color .15s}
+.ccard:hover{border-color:#cfd6e2}
+.ccard.old{background:#fcfcfd;border-style:dashed}
+.cwrap{width:88px;flex:none;display:flex}
+.ccover{width:88px;flex:1;min-height:112px;border-radius:8px;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:8px;color:#fff}
+.ccover .pb{font-size:10px;opacity:.85}
+.ccover .nn{font-size:12px;font-weight:600;line-height:1.35;word-break:break-all}
+.ccover .dd{font-size:10px;opacity:.8}
+.ccover.dy{background:linear-gradient(150deg,#2b2f3d,#161823)}
+.ccover.xhs{background:linear-gradient(150deg,#f0605f,#c81f33)}
+.ccover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ccover .ov{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:space-between;height:100%;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.cbody{flex:1;min-width:0;display:flex;flex-direction:column}
+.cname{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cname .ti{font-size:10px;font-weight:400;color:var(--tx3);border:1px solid var(--line);border-radius:20px;padding:0 6px}
+.cname .old{font-size:10px;font-weight:400;color:var(--amber);background:var(--amber-bg);border-radius:20px;padding:0 6px}
+.csub{font-size:11px;color:var(--tx3);margin:2px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmg{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 8px}
+.cmg .mi{background:#fafbfd;border-radius:6px;padding:3px 7px;border:1px solid transparent}
+.cmg .mi.hl{background:var(--yellow-bg);border-color:#f0dc8a}
+.cmg .mi:last-child:nth-child(odd){grid-column:1 / -1}
+.cmg .mi .l{font-size:10px;color:var(--tx3);white-space:nowrap}
+.cmg .mi .v{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
+.cmg .mi.hl .v{color:var(--yellow-tx)}
+.cfoot{margin-top:auto;padding-top:8px}
+.cfoot a{font-size:12px}
+.clink-off{font-size:12px;color:var(--tx3)}
+@media (max-width:860px){
+  .grid,.stats,.kpi-hero,.two-col,.charts,.metric-strip,.rt-grid,.ccards{grid-template-columns:1fr}
+  .entry{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="box">
+    <h1>媒介投放项目总看板</h1>
+    <p>内部资料 · 请输入访问口令</p>
+    <input id="pwd" type="password" placeholder="访问口令" autofocus>
+    <button id="btn">进入看板</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<div id="app" style="display:none">
+  <div class="wrap">
+    <div id="view"></div>
+    <div class="foot">数据来源：各项目飞书执行表（每日快照） · 项目元数据与周度进展：Q4项目管理总表（每周更新）</div>
+  </div>
+</div>
+
+<script>
+/* ============ 访问口令（改口令：同步更新 PASS_SHA256=sha256(新口令) 与 PASS_PLAIN） ============ */
+var PASS_SHA256 = "a974c9b75aabe77bc02534618613ba7e5ba7beef59cb60300c1f20b828fd0f39"; /* moma2026 */
+var PASS_PLAIN = "moma2026";
+function hex(buf){return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0")}).join("")}
+function sha256(s){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(hex)}
+
+/* ============ 全局错误兜底 ============ */
+window.onerror = function(msg, src, line){
+  var v = document.getElementById("view");
+  if(v){ v.innerHTML = '<section><h2>页面渲染出错</h2><div class="textblock">'+esc(String(msg))+'（第 '+line+' 行）</div></section>'; }
+  document.getElementById("gate").style.display="none";
+  document.getElementById("app").style.display="";
+};
+
+/* ============ 工具 ============ */
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function fmtMoney(v){
+  if(v==null||isNaN(v)) return "—";
+  var w=v/10000;
+  if(Math.abs(w)>=1) return "¥"+(Math.round(w*10)/10).toLocaleString("zh-CN")+"万";
+  return "¥"+Math.round(v).toLocaleString("zh-CN");
+}
+function fmtNum(v){
+  if(v==null||isNaN(v)) return "—";
+  if(Math.abs(v)>=10000) return (v/10000).toFixed(1).replace(/\.0$/,"")+"万";
+  return Math.round(v).toLocaleString("zh-CN");
+}
+/* 源表里的纯数字（如 338000）统一成 33.8万，避免与 "62.5万" 混排 */
+function fmtRaw(s){
+  if(s==null||s==="") return "—";
+  var t=String(s).trim();
+  if(/^[\d,]+(\.\d+)?$/.test(t)){
+    var n=parseFloat(t.replace(/,/g,""));
+    if(n>=10000) return fmtNum(n);
+  }
+  return t;
+}
+function barCls(p,kind){
+  if(p==null) return "";
+  if(kind==="spend"){ if(p>105) return "warn"; if(p>=60) return "ok"; return "low"; }
+  if(p>=100) return "ok"; if(p>=60) return ""; return "low";
+}
+function barHtml(p,kind,full){
+  if(p==null) return '<span style="color:var(--tx3);font-size:12px">—</span>';
+  return '<span class="pbar'+(full?' full':'')+'"><i class="'+barCls(p,kind)+'" style="width:'+Math.min(p,100)+'%"></i></span>'
+    + (full?'':'<span class="pv">'+p+'%</span>');
+}
+/* 详情页 hero 用的进度条：条 + 右侧百分比，不再套 .bar 造成裁切 */
+function heroBar(p,kind){
+  if(p==null) return '<div class="bwrap"><span style="color:var(--tx3);font-size:12px">—</span></div>';
+  return '<div class="bwrap">'+barHtml(p,kind,true)+'<span class="pct">'+p+'%</span></div>';
+}
+function kpiOf(p,platform,keyword){
+  var list=p.kpi.filter(function(k){
+    var okP = !platform || k.platform===platform;
+    return okP && k.metric && k.metric.indexOf(keyword)>=0;
+  });
+  return list.length?list[0]:null;
+}
+function pickMetric(p,platform,keys){
+  for(var i=0;i<keys.length;i++){var k=kpiOf(p,platform,keys[i]); if(k) return k}
+  return null;
+}
+function chujiePct(p){
+  var c=p.chujie; if(!c||!c.target) return null;
+  return c.progress_pct!=null?c.progress_pct:Math.round(c.actual/c.target*1000)/10;
+}
+/* 声量：整体优先，缺失时退回平台口径（6201 用红书阅读量） */
+function voiceOf(p){
+  return kpiOf(p,"整体","声量") || kpiOf(p,null,"声量") || null;
+}
+
+/* ============ 折线图（纯 SVG） ============ */
+function lineChart(host, cfg){
+  var w=460,h=150,padL=44,padR=10,padT=10,padB=22;
+  var vals=cfg.values||[], dates=cfg.dates||[];
+  if(!vals.length){host.innerHTML='<div class="empty">暂无数据</div>';return}
+  var max=Math.max.apply(null,vals), min=0;
+  var span=(max-min)||1;
+  var innerW=w-padL-padR, innerH=h-padT-padB;
+  function X(i){return padL + (vals.length===1?innerW/2:innerW*i/(vals.length-1))}
+  function Y(v){return padT + innerH*(1-(v-min)/span)}
+  var pts=vals.map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1)}).join(" ");
+  var area="M"+X(0).toFixed(1)+","+(h-padB)+" L"+pts.split(" ").join(" L")+" L"+X(vals.length-1).toFixed(1)+","+(h-padB)+" Z";
+  var grid="",ylab="";
+  for(var g=0;g<=3;g++){
+    var yy=padT+innerH*g/3, val=max-(span*g/3);
+    grid+='<line x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+yy.toFixed(1)+'" stroke="#eef1f6" stroke-width="1"/>';
+    ylab+='<text x="'+(padL-6)+'" y="'+(yy+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="#8f959e">'+fmtNum(val)+'</text>';
+  }
+  var xlab="", step=Math.max(1,Math.ceil(dates.length/5));
+  for(var i=0;i<dates.length;i+=step){
+    xlab+='<text x="'+X(i).toFixed(1)+'" y="'+(h-7)+'" text-anchor="middle" font-size="9" fill="#8f959e">'+dates[i].slice(5)+'</text>';
+  }
+  var dots=vals.map(function(v,i){
+    return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.4" fill="#fff" stroke="'+cfg.color+'" stroke-width="1.3"><title>'+dates[i]+'：'+fmtNum(v)+'</title></circle>';
+  }).join("");
+  host.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'
+    +grid
+    +'<path d="'+area+'" fill="'+cfg.color+'" opacity="0.07"/>'
+    +'<polyline points="'+pts+'" fill="none" stroke="'+cfg.color+'" stroke-width="1.8" stroke-linejoin="round"/>'
+    +dots
+    +'<line x1="'+padL+'" y1="'+(h-padB)+'" x2="'+(w-padR)+'" y2="'+(h-padB)+'" stroke="#e4e8ef" stroke-width="1"/>'
+    +ylab+xlab+'</svg>';
+}
+var SERIES_DEF=[
+  {key:"day_voice", title:"曝光 + 阅读（当日）", sub:"抖音曝光量 + 红书阅读量 · 每日新增，非累计", color:"#2f5cad"},
+  {key:"day_a3",    title:"抖音 A3（当日）", sub:"抖音新增 A3 人群 · 每日新增", color:"#6b4fbb"},
+  {key:"day_uv",    title:"红书进店 UV（当日）", sub:"小红书进店 UV · 每日新增", color:"#b3261e"},
+  {key:"day_gmv",   title:"总 GMV（当日）", sub:"抖音 GMV + 小红星全店 GMV · 每日新增", color:"#2e7d32"}
+];
+function chartsHtml(prefix){
+  var html='<div class="charts">';
+  SERIES_DEF.forEach(function(s){
+    html+='<div class="chart"><div class="ct">'+s.title+'</div><div class="cs">'+s.sub+'</div><div id="'+prefix+s.key+'"></div></div>';
+  });
+  return html+'</div>';
+}
+function drawSeries(prefix, series){
+  SERIES_DEF.forEach(function(s){
+    var host=document.getElementById(prefix+s.key);
+    if(host&&series) lineChart(host,{dates:series.dates, values:series[s.key]||[], color:s.color});
+  });
+}
+
+/* ============ 汇总页 ============ */
+/* 四项目合计：取各项目看板达成值加总（没有全局日更源，只给累计） */
+function rollupHtml(D){
+  var r=D.rollup;
+  if(!r) return '';
+  function cell(label, v, sub){
+    return '<div class="rt-cell"><div class="k">'+label+'</div>'
+      +'<div class="v">'+fmtNum(v)+'</div>'
+      +'<div class="s">'+sub+'</div></div>';
+  }
+  var gsub='抖音 '+fmtNum(r.gmv_dy)+' · 红书 '+fmtNum(r.gmv_xhs)
+    +(r.gmv_zhihu?' · 知乎 '+fmtNum(r.gmv_zhihu):'');
+  return '<div class="rt"><div class="rt-head">'
+    +'<span class="t">四项目合计</span>'
+    +'<span class="s">各项目看板达成值加总 · 声量 = 抖音曝光 + 红书阅读 · GMV 取全店口径</span>'
+    +'</div><div class="rt-grid">'
+    +cell('总声量', r.voice, '抖音 '+fmtNum(r.voice_dy)+' · 红书 '+fmtNum(r.voice_xhs))
+    +cell('抖音 A3', r.a3, '四项目新增 A3 合计')
+    +cell('红书进店 UV', r.uv, '四项目小红星进店 UV 合计')
+    +cell('总 GMV', r.gmv, gsub)
+    +'</div></div>';
+}
+
+function renderHome(){
+  var D=window.DATA, v=document.getElementById("view");
+  if(!D){v.innerHTML='<section><h2>正在加载数据…</h2><div class="textblock">若长时间无响应，请刷新页面。</div></section>';return}
+  var tb=0,ts=0,ca=0,ct=0;
+  D.projects.forEach(function(p){
+    tb+=p.budget.total.budget||0; ts+=p.budget.total.spent||0;
+    if(p.chujie){ca+=p.chujie.actual||0; ct+=p.chujie.target||0}
+  });
+  var overall=Math.round(ts/tb*1000)/10;
+  var chjPct=ct?Math.round(ca/ct*1000)/10:null;
+
+  var html=''
+   +'<header class="top"><h1>媒介投放项目总看板</h1><span class="sub">Q4 在投项目</span>'
+   +'<span class="toplink" onclick="location.hash=\'#/guide\'">数据来源指南 ›</span></header>'
+   +'<div class="updated">数据快照时间：'+esc(D.updated_at)+'（T+1 日更 · 每日 14:00 自动刷新）</div>'
+   +'<div class="stats">'
+   +'<div class="stat"><div class="k">在投项目</div><div class="v">'+D.projects.length+'</div><div class="s">个</div></div>'
+   +'<div class="stat"><div class="k">总预算</div><div class="v">'+fmtMoney(tb)+'</div><div class="s">执行表合计口径</div></div>'
+   +'<div class="stat"><div class="k">已消耗（内容+投流）</div><div class="v">'+fmtMoney(ts)+'</div><div class="s">四项目合计口径</div></div>'
+   +'<div class="stat"><div class="k">整体消耗进度</div><div class="v">'+overall+'%</div><div class="s">已消耗 / 总预算</div></div>'
+   +'<div class="stat"><div class="k">已出街内容</div><div class="v">'+ca+' <small>/ '+ct+' 条</small></div><div class="s">出街进度 '+(chjPct==null?'—':chjPct+'%')+'</div></div>'
+   +'</div>';
+
+  // ---- 四项目合计（各项目看板达成值加总）
+  html+=rollupHtml(D);
+
+  html+='<div class="grid">';
+  D.projects.forEach(function(p){
+    var t=p.budget.total;
+    var sl=voiceOf(p);
+    var cp=chujiePct(p);
+    html+='<div class="card" onclick="location.hash=\'#/p/'+p.id+'\'">'
+     +'<div class="head"><h3>'+esc(p.name)+'</h3><span class="go">查看详情 ›</span></div>'
+     +'<div class="chips"><span class="chip st">'+esc(p.status)+'</span>'
+     +(p.category?'<span class="chip cat">'+esc(p.category)+'</span>':'')
+     +'<span class="chip">'+esc((p.platforms||"").replace(/\s/g,""))+'</span></div>'
+     +'<div class="meta">负责人：'+esc(p.owner)+' · 周期：'+esc(p.period)+'</div>'
+     +'<div class="meter"><div class="row"><span class="lab">预算消耗</span><span class="num">'+fmtMoney(t.spent)+' / '+fmtMoney(t.budget)+'</span></div>'
+     +'<div class="bar"><i class="'+barCls(t.progress_pct,"spend")+'" style="width:'+Math.min(t.progress_pct||0,100)+'%"></i></div></div>'
+     +'<div class="meter"><div class="row"><span class="lab">已出街内容</span><span class="num">'+(p.chujie?p.chujie.actual:'—')+' / '+(p.chujie?p.chujie.target:'—')+' 条</span></div>'
+     +'<div class="bar"><i class="'+barCls(cp,"achieve")+'" style="width:'+Math.min(cp||0,100)+'%"></i></div></div>'
+     +'<div class="meter"><div class="row"><span class="lab">声量达成</span><span class="num">'+esc(sl?fmtRaw(sl.current_raw):"—")+' / '+esc(sl?fmtRaw(sl.target_raw):"—")+'</span></div>'
+     +'<div class="bar"><i class="'+barCls(sl?sl.progress_pct:null,"achieve")+'" style="width:'+Math.min(sl&&sl.progress_pct||0,100)+'%"></i></div></div>'
+     +(p.qc?'<div class="meter"><div class="row"><span class="lab">'+esc(p.qc.label)+'</span><span class="num">'+esc(p.qc.actual_raw)+' / '+esc(p.qc.target_raw)+'</span></div>'
+       +'<div class="bar"><i class="'+barCls(p.qc.progress_pct,"spend")+'" style="width:'+Math.min(p.qc.progress_pct||0,100)+'%"></i></div></div>':'')
+     +'</div>';
+  });
+  html+='</div>';
+
+  v.innerHTML=html;
+}
+
+/* ============ 详情页 ============ */
+function renderDetail(id){
+  var D=window.DATA, v=document.getElementById("view");
+  var p=D.projects.filter(function(x){return x.id===id})[0];
+  if(!p){renderHome();return}
+  var t=p.budget.total;
+  var sl=voiceOf(p);
+  var rq=kpiOf(p,"整体","I人群")||kpiOf(p,"整体","A3")||kpiOf(p,null,"A3");
+  var rqOk=!!(rq && rq.target_raw && rq.target_raw!=="/" && rq.target_raw!=="-");
+  var cp=chujiePct(p);
+  var mCPA3=pickMetric(p,"抖音",["CPA3"]);
+  var mUV  =pickMetric(p,"红书",["进店成本"]);
+  var mROI =pickMetric(p,"红书",["ROI"]);
+  var mZH  =pickMetric(p,"知乎",["ROI"]);
+  var nDY=p.content?p.content.douyin.length:0, nXHS=p.content?p.content.xhs.length:0;
+  var cd=platChujie(p,"抖音"), cx=platChujie(p,"红书");
+  // 各平台执行周期不一致时，在「周期」后面补一行拆解（项目周期 = 最早开始 ~ 最晚结束）
+  var pp=(p.chujie&&p.chujie.periods)?p.chujie.periods.filter(function(x){return x.period}):[];
+  var ppTxt="";
+  if(pp.length>1){
+    var uniq={};
+    pp.forEach(function(x){uniq[x.period]=1});
+    if(Object.keys(uniq).length>1){
+      ppTxt=" · 平台拆解："+pp.map(function(x){
+        return (x.platform?x.platform+" ":"")+x.period
+      }).join(" ／ ");
+    }
+  }
+
+  var html='<div class="crumb"><a onclick="location.hash=\'#/\'">‹ 返回总览</a></div>'
+   +'<div class="dhead"><h1>'+esc(p.name)+'</h1>'
+   +'<div class="chips"><span class="chip st">'+esc(p.status)+'</span>'
+   +(p.category?'<span class="chip cat">'+esc(p.category)+'</span>':'')
+   +'<span class="chip">'+esc((p.platforms||"").replace(/\s/g,""))+'</span></div></div>'
+   +'<div class="dmeta"><span>负责人：'+esc(p.owner)+'</span><span>周期：'+esc(p.period)+esc(ppTxt)+'</span>'
+   +'<a href="'+esc(p.sheet_url)+'" target="_blank" rel="noopener">打开飞书执行表 ↗</a></div>'
+
+   +'<div class="kpi-hero">'
+   +'<div class="hero"><div class="k">整体声量达成</div><div class="v">'+esc(sl?fmtRaw(sl.current_raw):"—")+'</div>'
+   +'<div class="t">目标 '+esc(sl?fmtRaw(sl.target_raw):"—")+'</div>'+heroBar(sl?sl.progress_pct:null,"achieve")+'</div>'
+
+   +'<div class="hero click" onclick="location.hash=\'#/p/'+p.id+'/content\'">'
+   +'<div class="k">已出街内容<span class="go">查看明细 ›</span></div>'
+   +'<div class="v">'+(p.chujie?p.chujie.actual:'—')+' <span style="font-size:13px;color:var(--tx3)">/ '+(p.chujie?p.chujie.target:'—')+' 条</span></div>'
+   +'<div class="t">抖音 '+(cd?cd.actual:nDY)+' 条 · 红书 '+(cx?cx.actual:nXHS)+' 条</div>'+heroBar(cp,"achieve")+'</div>'
+
+   +(rqOk?'<div class="hero"><div class="k">'+esc(rq.metric)+'达成</div><div class="v">'+esc(rq.current_raw||"—")+'</div>'
+        +'<div class="t">目标 '+esc(rq.target_raw)+'</div>'+heroBar(rq.progress_pct,"achieve")+'</div>'
+      :'<div class="hero"><div class="k">已消耗（内容+投流）</div><div class="v">'+fmtMoney(t.spent)+'</div>'
+        +'<div class="t">总预算 '+fmtMoney(t.budget)+'</div>'+heroBar(t.progress_pct,"spend")+'</div>')
+   +'</div>'
+
+   // 发布内容入口
+   +'<section><h2>发布内容明细<span class="hint">按平台 → 内容类型 → 达人卡片，点进去看单条数据</span></h2>'
+   +'<div class="entry">'
+   +'<div class="e" onclick="location.hash=\'#/p/'+p.id+'/content\'">'
+   +'<div class="l"><span class="plat-dot dy">抖音</span><div><div class="nm">抖音 · '+(cd?cd.actual+' / '+cd.target+' 条':nDY+' 条')+'</div>'
+   +'<div class="ct">'+(nDY?esc(contentOldCount(p,"douyin")?'含老素材 '+contentOldCount(p,"douyin")+' 条':'内容+投流+GMV 明细'):(cd?(cd.actual>0?('已出街 '+cd.actual+' 条（目标 '+cd.target+' 条）· 单条明细待补'):('目标 '+cd.target+' 条 · 尚未开始出街')):'本期暂无出街内容'))+'</div></div></div>'
+   +'<span class="arw">›</span></div>'
+   +'<div class="e" onclick="location.hash=\'#/p/'+p.id+'/content\'">'
+   +'<div class="l"><span class="plat-dot xhs">红书</span><div><div class="nm">红书 · '+(cx?cx.actual+' / '+cx.target+' 条':nXHS+' 条')+'</div>'
+   +'<div class="ct">'+(nXHS?'点击率 / 互动率 / GMV / ROI / 进店成本':(cx?(cx.actual>0?('已出街 '+cx.actual+' 条（目标 '+cx.target+' 条）· 单条明细待补'):('目标 '+cx.target+' 条 · 尚未开始出街')):'本期暂无出街内容'))+'</div></div></div>'
+   +'<span class="arw">›</span></div>'
+   +'</div></section>'
+
+   +'<section><h2>关键效率指标<span class="hint">直接读项目达成表当前值，不设进度 · '
+   +'<a style="cursor:pointer" onclick="location.hash=\'#/p/'+p.id+'/ads\'">查看投流情况 ›</a></span></h2><div class="metric-strip">'
+   +'<div class="metric-cell"><div class="k">抖音 CPA3</div><div class="v">'+esc(mCPA3&&mCPA3.current_raw?mCPA3.current_raw:"—")+'</div><div class="t">目标 '+esc(mCPA3&&mCPA3.target_raw?mCPA3.target_raw:"未设")+'</div></div>'
+   +'<div class="metric-cell"><div class="k">红书进店成本</div><div class="v">'+esc(mUV&&mUV.current_raw?mUV.current_raw:"—")+'</div><div class="t">目标 '+esc(mUV&&mUV.target_raw?mUV.target_raw:"未设")+'</div></div>'
+   +'<div class="metric-cell"><div class="k">红书 ROI</div><div class="v">'+esc(mROI&&mROI.current_raw?mROI.current_raw:"—")+'</div><div class="t">'+esc(mROI?("目标 "+(mROI.target_raw&&mROI.target_raw!=="/"?mROI.target_raw:"未设")):"未投红书")+'</div></div>'
+   +'<div class="metric-cell"><div class="k">知乎 ROI</div><div class="v">'+esc(mZH&&mZH.current_raw?mZH.current_raw:"—")+'</div><div class="t">'+esc(mZH?("目标 "+(mZH.target_raw&&mZH.target_raw!=="/"?mZH.target_raw:"未设")):"本项目未投知乎")+'</div></div>'
+   +(p.qc?'<div class="metric-cell"><div class="k">'+esc(p.qc.label)+'</div><div class="v">'+esc(p.qc.actual_raw)+'</div><div class="t">目标 '+esc(p.qc.target_raw)+(p.qc.progress_pct!=null?' · 进度 '+p.qc.progress_pct+'%':'')+'</div></div>':'')
+   +'<div class="metric-cell" style="cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--line2)\'" onclick="location.hash=\'#/p/'+p.id+'/ads\'">'
+   +'<div class="k">投流诊断</div><div class="v" style="color:var(--blue)">查看投流情况 ›</div>'
+   +'<div class="t">版位 / 内容类型 / 素材效率 · 次日对比</div></div>'
+   +'</div></section>'
+
+   +'<section><h2>预算分解（执行表口径）</h2><table><thead><tr><th>类型</th><th>平台</th><th>总预算</th><th>已消耗（内容+投流）</th><th>消耗进度</th></tr></thead><tbody>'
+   +'<tr class="plat-row"><td class="cat">合计</td><td></td><td>'+esc(t.budget_raw)+'</td><td>'+esc(t.spent_raw)+'</td><td>'+barHtml(t.progress_pct,"spend")+'</td></tr>';
+  p.budget.items.forEach(function(i){
+    html+='<tr><td class="cat">'+esc(i.category)+'</td><td>'+esc(i.platform)+'</td><td>'+esc(i.budget_raw||"—")+'</td><td>'+esc(i.spent_raw||"—")+'</td><td>'+barHtml(i.progress_pct,"spend")+'</td></tr>';
+  });
+  html+='</tbody></table></section>'
+
+   +'<section><h2>平台指标明细（项目达成情况）</h2><table><thead><tr><th>平台</th><th>指标</th><th>目标</th><th>当前达成</th><th>达成进度</th><th>备注</th></tr></thead><tbody>';
+  p.kpi.forEach(function(k){
+    html+='<tr'+(k.platform==="整体"?' class="plat-row"':'')+'><td class="cat">'+esc(k.platform)+'</td><td class="metric">'+esc(k.metric)+'</td><td>'+esc(k.target_raw||"—")+'</td><td>'+esc(k.current_raw||"—")+'</td><td>'+barHtml(k.progress_pct,"achieve")+'</td><td class="note">'+esc(k.note||"")+'</td></tr>';
+  });
+  html+='</tbody></table></section>';
+
+  html+='<section><h2>当日趋势<span class="hint">'+(p.byday?'每日新增 · 10-01 起 · 仅该项目有日更源':'该执行表未提供 byday 日更源')+'</span></h2>';
+  if(p.byday){html+=chartsHtml("pch-")}
+  else{html+='<div class="empty">本项目执行表中只有阶段汇总与投放明细，没有按日期记录的声量 / A3 / 进店UV / GMV 序列，暂未绘制曲线。<br>补齐方式：提供云图 / 蒲公英 / 巨量日报导出表，即可接入同一套图表。</div>'}
+  html+='</section>';
+
+  html+='<div class="two-col">'
+   +'<section><h2>周度进展 · '+esc(p.weekly_progress_label||"最新")+'<span class="hint">来自 Q4 项目管理总表</span></h2><div class="textblock">'+esc(p.weekly_progress||"本周暂无")+'</div></section>'
+   +'<section><h2>'+esc(p.weekly_focus_label||"本周重点工作")+'</h2><div class="textblock">'+esc(p.weekly_focus||"—")+'</div></section>'
+   +'</div>';
+
+  v.innerHTML=html;
+  if(p.byday){drawSeries("pch-", p.byday)}
+  window.scrollTo(0,0);
+}
+
+/* ============ 发布内容子页面 ============ */
+var PLAT_META = {
+  douyin: {label:"抖音", cls:"dy", order:0,
+           metrics:[["fee_content","内容费用"],["fee_traffic","投流费用"],["cpm","CPM"],
+                    ["cpa3","CPA3（整体）"],["cpuvi","进店CPUV"],["gmv","总GMV（14日）"],["roi","总ROI"]]},
+  xhs:    {label:"红书", cls:"xhs", order:1,
+           metrics:[["ctr","点击率"],["irate","互动率"],["cpc","CPC"],["gmv","总GMV"],
+                    ["roi","总ROI"],["deal_rate","任务商品成交率"],["visitor_cost","进店成本"]]}
+};
+
+function contentOldCount(p, plat){
+  if(!p.content||!p.content[plat]) return 0;
+  return p.content[plat].filter(function(i){return i.old}).length;
+}
+/* 取某平台的出街条数/目标（只有多平台分表统计的项目才有 platforms） */
+function platChujie(p, name){
+  var ps=(p.chujie&&p.chujie.platforms)||[];
+  for(var i=0;i<ps.length;i++){ if(ps[i].platform===name) return ps[i] }
+  return null;
+}
+function dkey(d){
+  var m=/^(\d{1,4})[\/-](\d{1,2})[\/-](\d{1,2})$/.exec(d||"");
+  if(m) return [+m[2],+m[3]];
+  m=/(\d{1,2})月(\d{1,2})/.exec(d||"");
+  if(m) return [+m[1],+m[2]];
+  return [0,0];
+}
+function coverHtml(it, plat){
+  var meta=PLAT_META[plat];
+  var ov='<div class="ov"><span class="pb">'+meta.label+'</span>'
+    +'<span class="nn">'+esc(it.name)+'</span>'
+    +'<span class="dd">'+esc(it.date||"—")+'</span></div>';
+  if(it.cover){
+    return '<div class="ccover '+meta.cls+'"><img src="'+esc(it.cover)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'+ov+'</div>';
+  }
+  return '<div class="ccover '+meta.cls+'">'+ov+'</div>';
+}
+/* 缺失 / 已判为失真的指标统一显示 "/" */
+function mv(it, key){
+  var v = (key==="irate") ? it.irate : (it.m ? it.m[key] : "");
+  if(v==null) return "/";
+  var t=String(v).trim();
+  return (t===""||t==="—"||t==="-") ? "/" : t;
+}
+/* '¥1,234.5' / '12.5%' -> 1234.5 / 12.5 ；无效返回 null */
+function toNum(v){
+  if(v==null) return null;
+  var t=String(v).replace(/[¥,\s%]/g,"");
+  if(t===""||t==="/"||t==="-"||t==="—") return null;
+  var n=parseFloat(t);
+  return isNaN(n)?null:n;
+}
+/* 该平台的主排序/汇总指标：抖音看 CPA3，红书看 进店成本 */
+function platKey(plat){ return plat==="douyin" ? "cpa3" : "visitor_cost" }
+function posOrInf(v){ return (v==null||v<=0) ? Infinity : v }
+
+/* 类型级加权汇总：先用基数（费用 / 播放量 / 新增A3 / 进店UV / GMV）累加，再相除
+   这样得到的是「该类型整体」的 CPM / CPA3 / 进店成本 / ROI，而不是单条指标的算术平均 */
+function typeAgg(arr, plat){
+  var sum={cost:0, views:0, a3:0, uv:0, gmv:0};
+  var sub={views:0, a3:0, uv:0, gmv:0};   // 只累加该基数有效的条目对应的费用
+  arr.forEach(function(it){
+    var n=it.n||{}, c=n.cost||0;
+    sum.cost+=c;
+    if(n.views>0){ sum.views+=n.views; sub.views+=c }
+    if(n.a3>0){ sum.a3+=n.a3; sub.a3+=c }
+    if(n.uv>0){ sum.uv+=n.uv; sub.uv+=c }
+    if(n.gmv>0){ sum.gmv+=n.gmv; sub.gmv+=c }
+  });
+  return {
+    cost: sum.cost,
+    cpm: sum.views>0 ? sub.views/sum.views*1000 : null,
+    cpa3: sum.a3>0 ? sub.a3/sum.a3 : null,
+    vcost: sum.uv>0 ? sub.uv/sum.uv : null,
+    roi: sub.gmv>0 ? sum.gmv/sub.gmv : null
+  };
+}
+function fmtE(v, isMoney){
+  if(v==null||!isFinite(v)||v<=0) return "/";
+  return isMoney ? ("¥"+(v>=100?Math.round(v):Math.round(v*100)/100))
+                 : (Math.round(v*100)/100).toFixed(2);
+}
+
+function cardHtml(it, plat){
+  var meta=PLAT_META[plat];
+  var mg='';
+  meta.metrics.forEach(function(pair){
+    var key=pair[0], label=pair[1], val=mv(it,key);
+    var hl="";
+    if(key==="deal_rate" && it.deal_num!=null && it.deal_num>40) hl=" hl";
+    mg+='<div class="mi'+hl+'"><div class="l">'+label+'</div><div class="v">'+esc(val)+'</div></div>';
+  });
+  return '<article class="ccard'+(it.old?' old':'')+'">'
+    +'<div class="cwrap">'+coverHtml(it,plat)+'</div>'
+    +'<div class="cbody">'
+    +'<div class="cname">'+esc(it.name)
+      +(it.tier?'<span class="ti">'+esc(it.tier)+'</span>':'')
+      +(it.old?'<span class="old">老素材</span>':'')
+    +'</div>'
+    +'<div class="csub">'+esc(it.type)+(it.batch?' · '+esc(it.batch):'')+'</div>'
+    +'<div class="cmg">'+mg+'</div>'
+    +'<div class="cfoot">'+(it.link?'<a href="'+esc(it.link)+'" target="_blank" rel="noopener">查看'+(plat==="xhs"?"笔记":"视频")+' ↗</a>':'<span class="clink-off">未填发布链接</span>')+'</div>'
+    +'</div></article>';
+}
+
+function renderContent(id){
+  var D=window.DATA, v=document.getElementById("view");
+  var p=D.projects.filter(function(x){return x.id===id})[0];
+  if(!p){renderHome();return}
+
+  var html='<div class="crumb"><a onclick="location.hash=\'#/p/'+p.id+'\'">‹ 返回 '+esc(p.name)+'</a></div>'
+    +'<div class="dhead"><h1>发布内容明细</h1>'
+    +'<div class="chips"><span class="chip">'+esc(p.short)+'</span>'
+    +'<span class="chip">'+((p.content.douyin.length)+(p.content.xhs.length))+' 条</span></div></div>'
+    +'<div class="dmeta"><span>按 平台 → 内容类型 → 达人 归组</span>'
+    +'<span>任务商品成交率 &gt; 40% 标黄</span>'
+    +'<a href="'+esc(p.sheet_url)+'" target="_blank" rel="noopener">打开飞书执行表 ↗</a>'
+    +'<span class="dnote">内容类型与达人按 CPA3（红书按 进店成本）由低到高排序；该页面中的成本均为不去重数据，只作为内容效率对比参考值。</span></div>';
+
+  var total=0;
+  ["douyin","xhs"].forEach(function(plat){
+    var items=(p.content&&p.content[plat])||[];
+    if(!items.length) return;
+    total+=items.length;
+    var meta=PLAT_META[plat];
+    var key=platKey(plat);
+    var oldN=items.filter(function(i){return i.old}).length;
+
+    html+='<div class="psection"><div class="phead">'
+      +'<span class="plat-dot '+meta.cls+'">'+meta.label+'</span>'
+      +'<span class="nm">'+meta.label+'</span>'
+      +'<span class="ct">'+items.length+' 条'+(oldN?'（含老素材 '+oldN+' 条）':'')+'</span>'
+      +'<span class="tagb">'+(plat==="xhs"?"点击率 / 互动率 / CPC / GMV / ROI / 成交率 / 进店成本":"内容费用 / 投流费用 / CPM / CPA3 / 进店CPUV / GMV / ROI")+'</span>'
+      +'</div>';
+
+    // 按内容类型分组
+    var groups={}, order=[];
+    items.forEach(function(it){
+      var k=it.type||"未分类";
+      if(!groups[k]){groups[k]=[];order.push(k)}
+      groups[k].push(it);
+    });
+
+    // 类型级汇总 + 按主指标从低到高排序（无值排最后）
+    var agg={};
+    order.forEach(function(g){ agg[g]=typeAgg(groups[g], plat) });
+    order.sort(function(a,b){
+      var x=posOrInf(plat==="douyin"?agg[a].cpa3:agg[a].vcost);
+      var y=posOrInf(plat==="douyin"?agg[b].cpa3:agg[b].vcost);
+      if(x!==y) return x-y;
+      return groups[b].length-groups[a].length;
+    });
+
+    order.forEach(function(g){
+      var arr=groups[g].slice();
+      // 新素材在前、老素材在后；各自按主指标从低到高，再按发布日期倒序
+      arr.sort(function(x,y){
+        if(x.old!==y.old) return x.old?1:-1;
+        var a=posOrInf(toNum(x.m?x.m[key]:"")), b=posOrInf(toNum(y.m?y.m[key]:""));
+        if(a!==b) return a-b;
+        var da=dkey(x.date), db=dkey(y.date);
+        if(da[0]!==db[0]) return db[0]-da[0];
+        return db[1]-da[1];
+      });
+      var A=agg[g];
+      var tm = plat==="douyin"
+        ? '<span class="tmi"><b>CPM</b>'+fmtE(A.cpm,true)+'</span><span class="tmi"><b>CPA3</b>'+fmtE(A.cpa3,true)+'</span>'
+        : '<span class="tmi"><b>进店成本</b>'+fmtE(A.vcost,true)+'</span><span class="tmi"><b>ROI</b>'+fmtE(A.roi,false)+'</span>';
+      html+='<div class="typeg"><h4>'+esc(g)+'<span class="n">'+arr.length+'</span>'
+        +'<span class="tm">'+tm+'</span></h4><div class="ccards">';
+      arr.forEach(function(it){ html+=cardHtml(it,plat) });
+      html+='</div></div>';
+    });
+    html+='</div>';
+  });
+
+  if(!total){
+    html+='<section><div class="empty">本项目执行表暂无可展示的发布内容记录。</div></section>';
+  }
+  v.innerHTML=html;
+  window.scrollTo(0,0);
+}
+
+/* ============ 投流情况子页面（投流诊断：平台 / 工具 / 维度 筛选） ============ */
+var ADS_VIEW = null;
+
+function adsMoney(v){
+  if(v==null||!isFinite(v)||v<=0) return "/";
+  return "¥"+(v>=100?Math.round(v).toLocaleString("zh-CN"):Math.round(v*100)/100);
+}
+function adsNum(v){
+  if(v==null||!isFinite(v)||v<=0) return "/";
+  return Math.round(v).toLocaleString("zh-CN");
+}
+function adsPct(v){
+  return (v==null||!isFinite(v)||v<=0)?"/":v+"%";
+}
+/* 后端成本叙述：有 CPUV 用 CPUV；没有就说明缺 UV 并退回前端成本（不输出 "¥/ /" 这类空值） */
+function adsBack(r){
+  if(!r) return "";
+  if(r.cpuv!=null) return '后端成本 <b>CPUV '+adsMoney(r.cpuv)+'</b>（UV '+adsNum(r.uv)+'）｜前端 CPC '+adsMoney(r.cpc)+' / CTR '+adsPct(r.ctr)+' / 消费 '+adsMoney(r.cost);
+  if(r.uv_cost!=null) return '后端成本 <b>进店UV成本 '+adsMoney(r.uv_cost)+'</b>（进店UV '+adsNum(r.uv)+'）｜前端 CPC '+adsMoney(r.cpc)+' / CTR '+adsPct(r.ctr)+' / 消费 '+adsMoney(r.cost);
+  return 'UV 未回传（该数据源未提供站外活跃 UV）→ 改为按前端成本判断：CPC '+adsMoney(r.cpc)+' / CTR '+adsPct(r.ctr)+' / 消费 '+adsMoney(r.cost);
+}
+function adsBackDy(r){
+  if(!r) return "";
+  var out = (r.uv_cost!=null)
+    ? '后端成本 <b>进店UV成本 '+adsMoney(r.uv_cost)+'</b>（进店UV '+adsNum(r.uv)+'）｜'
+    : '进店 UV 未回传 → 按前端成本判断｜';
+  if(r.cpa3!=null) out += 'CPA3 '+adsMoney(r.cpa3)+' / ';
+  return out + 'CPC '+adsMoney(r.cpc)+' / 消耗 '+adsMoney(r.cost);
+}
+/* 可排序表头：点击列头切换 降序/升序，空值(/)始终沉底 */
+function sortTh(head){
+  return '<thead><tr>'+head.map(function(h,i){
+    return '<th class="s" data-i="'+i+'" onclick="sortTable(this)">'+h+'<span class="car">▼</span></th>';
+  }).join('')+'</tr></thead>';
+}
+function _cellNum(td){
+  if(!td) return null;
+  var t=(td.textContent||"").replace(/[¥,\s]/g,"").replace("%","");
+  if(t==="" || t==="/" || t==="—" || t==="-") return null;
+  var v=parseFloat(t);
+  return isNaN(v)?null:v;
+}
+function sortTable(th){
+  var table=th.closest("table"); if(!table||!table.tBodies[0]) return;
+  var idx=parseInt(th.getAttribute("data-i"),10);
+  var tb=table.tBodies[0];
+  var all=Array.prototype.slice.call(tb.rows);
+  var fixed=all.filter(function(r){return (r.className||"").indexOf("sum")>=0});
+  var rows=all.filter(function(r){return (r.className||"").indexOf("sum")<0});
+  var dir = th.getAttribute("data-dir")==="desc" ? "asc" : "desc";
+  Array.prototype.forEach.call(th.parentNode.children,function(h){
+    h.removeAttribute("data-dir"); h.classList.remove("on");
+    var c=h.querySelector(".car"); if(c) c.textContent="▼";
+  });
+  th.setAttribute("data-dir",dir); th.classList.add("on");
+  var c=th.querySelector(".car"); if(c) c.textContent = dir==="desc" ? "▼" : "▲";
+  rows.sort(function(a,b){
+    var va=_cellNum(a.cells[idx]), vb=_cellNum(b.cells[idx]);
+    if(va===null&&vb===null) return 0;
+    if(va===null) return 1;
+    if(vb===null) return -1;
+    return dir==="asc" ? va-vb : vb-va;
+  });
+  rows.concat(fixed).forEach(function(r){tb.appendChild(r)});
+}
+/* 效率表格：rows 已按效率最差在前；首行标红=最需优化 */
+function adsTable(head, rows, render){
+  if(!rows.length) return '<div class="empty">该维度暂无数据</div>';
+  var html='<table>'+sortTh(head)+'<tbody>';
+  rows.forEach(function(r,i){
+    html+='<tr'+(i===0?' style="background:var(--red-bg)"':'')+'>'+render(r,i)+'</tr>';
+  });
+  return html+'</tbody></table>';
+}
+function deltaTxt(cur, prev, unit, better){
+  if(cur==null&&prev==null) return "—";
+  var f=function(v){return v==null?"/":v};
+  var arrow="";
+  if(cur!=null&&prev!=null&&prev>0){
+    var diff=(cur-prev)/prev*100;
+    var color = better==null ? "var(--tx2)"
+      : (better==="down" ? (diff<0?"var(--green)":"var(--red)") : (diff>0?"var(--green)":"var(--red)"));
+    arrow=' <span style="color:'+color+'">'+(diff>=0?'▲':'▼')+Math.abs(Math.round(diff))+'%</span>';
+  }
+  return f(cur)+unit+arrow;
+}
+function dayCmp(days, keys){
+  if(!days||days.length<2) return '<span style="color:var(--tx3)">数据不足一天</span>';
+  var a=days[days.length-2], b=days[days.length-1];
+  return '<div style="font-size:11px;line-height:1.7">'
+    +'<div style="color:var(--tx3)">'+a.date.slice(5)+' → <b>'+b.date.slice(5)+'</b></div>'
+    +keys.map(function(k){
+      return '<div>'+k[1]+'：'+deltaTxt(b[k[0]], a[k[0]], "", k[2])+'</div>';
+    }).join('')+'</div>';
+}
+
+function adsSet(k, val){
+  if(!ADS_VIEW) return;
+  ADS_VIEW[k]=val;
+  if(k==="plat"){ ADS_VIEW.tool="all"; ADS_VIEW.tkind="all"; ADS_VIEW.dim = (val==="xhs")?"placements":"materials"; }
+  adsPaint();
+}
+
+/* 定向类型：kw=关键词/词包，aud=人群包，none=源表未填 */
+var TKIND_LABEL = {kw:"关键词", aud:"人群包", none:"未标注"};
+function tkindOf(r){
+  if(r.kind) return r.kind;
+  var n=r.name||"";
+  if(n==="未标注"||!n) return "none";
+  if(n.indexOf("人群")>=0||n.indexOf("智能")>=0||n==="高级") return "aud";
+  if(n.indexOf("词")>=0) return "kw";
+  return "aud";
+}
+
+/* 词包 → 关键词 层级表（数据源：日报「达人×词包数据」） */
+function kwTableHtml(groups, maxGroup, maxKw){
+  var mg = maxGroup||6, mk = maxKw||8;
+  var tot = groups.reduce(function(s,g){return s+g.cost},0)||1;
+  var html='<table>'+sortTh(['词包 / 关键词','层级','消费','展现量','点击量','UV','点击率','CPC','CPUV','消费占比'])+'<tbody>';
+  groups.slice(0,mg).forEach(function(g){
+    var gcpc = g.clicks? round2(g.cost/g.clicks) : null;
+    html+='<tr style="background:#f7f9fc;font-weight:600">'
+      +'<td class="metric">'+esc(g.name)+'（词包）</td>'
+      +'<td><span style="font-size:11px;padding:1px 7px;border-radius:10px;background:#eaf1fd;color:#2b62b8">词包</span></td>'
+      +'<td>'+adsMoney(g.cost)+'</td><td>'+adsNum(g.views)+'</td><td>'+adsNum(g.clicks)+'</td>'
+      +'<td>'+adsNum(g.uv)+'</td><td>'+adsPct(g.ctr)+'</td><td>'+adsMoney(gcpc)+'</td>'
+      +'<td class="metric">'+adsMoney(g.cpuv)+'</td>'
+      +'<td>'+(Math.round(g.cost/tot*1000)/10)+'%</td></tr>';
+    g.kws.slice(0,mk).forEach(function(k){
+      html+='<tr><td style="padding-left:26px">'+esc(k.name)+'</td>'
+        +'<td><span style="font-size:11px;padding:1px 7px;border-radius:10px;background:#f4f6fa;color:#67707e">关键词</span></td>'
+        +'<td>'+adsMoney(k.cost)+'</td><td>'+adsNum(k.views)+'</td><td>'+adsNum(k.clicks)+'</td>'
+        +'<td>'+adsNum(k.uv)+'</td><td>'+adsPct(k.ctr)+'</td><td>'+adsMoney(k.cpc)+'</td>'
+        +'<td class="metric">'+adsMoney(k.cpuv)+'</td><td>—</td></tr>';
+    });
+  });
+  html+='</tbody></table>';
+  if(groups.length>mg) html+='<div class="empty">其余 '+(groups.length-mg)+' 个词包消费较低，已省略</div>';
+  return html;
+}
+
+function adsPaint(){
+  var st=ADS_VIEW;
+  if(!st) return;
+  var p=st.p, A=p.ads, d=A[st.plat], host=document.getElementById("adsBody");
+  if(!host||!d) return;
+  var isX = st.plat==="xhs";
+  var dims = isX ? [["placements","版位"],["types","内容类型"],["targets","定向"],["materials","素材"]]
+                 : [["materials","素材"]];
+  var toolList = d.tools||[];
+  var toolObj = st.tool==="all" ? d.all : toolList.filter(function(t){return t.key===st.tool})[0];
+  if(!toolObj){ st.tool="all"; toolObj=d.all }
+  var rows = toolObj[st.dim]||[];
+  var viewRows = (st.dim==="targets") ? null : rows;   // 定向走 targetRows，其余走对应桶
+  var dimLabel = (dims.filter(function(x){return x[0]===st.dim})[0]||["","维度"])[1];
+
+  // 定向类型二级筛选（关键词 / 人群包 / 未标注）
+  var tkind = st.tkind||"all";
+  var tgtAll = toolObj.targets||[];
+  var targetRows = (tkind==="all") ? tgtAll
+    : tgtAll.filter(function(r){ return tkindOf(r)===tkind });
+
+  // ---- 筛选栏
+  var bar='<div class="fbar">'
+    +'<span class="fg">平台</span>'
+    +(A.xhs?'<span class="fchip'+(isX?" on":"")+'" onclick="adsSet(\'plat\',\'xhs\')">红书聚光</span>':'')
+    +(A.dy?'<span class="fchip'+(!isX?" on":"")+'" onclick="adsSet(\'plat\',\'dy\')">抖音投流</span>':'')
+    +'<span class="fg">工具</span>'
+    +'<span class="fchip'+(st.tool==="all"?" on":"")+'" onclick="adsSet(\'tool\',\'all\')">全部</span>'
+    +toolList.map(function(t){return '<span class="fchip'+(st.tool===t.key?" on":"")+'" onclick="adsSet(\'tool\',\''+esc(t.key)+'\')">'+esc(t.key)+'</span>'}).join('')
+    +'<span class="fg">维度</span>'
+    +dims.map(function(dm){return '<span class="fchip'+(st.dim===dm[0]?" on":"")+'" onclick="adsSet(\'dim\',\''+dm[0]+'\')">'+dm[1]+'</span>'}).join('')
+    +'</div>';
+
+  // ---- 定向类型二级筛选（关键词 / 人群包 / 未标注）
+  var kwGroups = (d.kw && d.kw.groups) || [];
+  var tbar='';
+  if(isX && st.dim==="targets"){
+    var segs=[["all","全部"],["kw","关键词定向"],["aud","人群包定向"],["none","未标注"]];
+    tbar='<div class="fbar" style="margin-top:-4px">'
+      +'<span class="fg">定向类型</span>'
+      +segs.map(function(s){
+          var cnt = (s[0]==="all") ? rows.length
+                  : rows.filter(function(r){return tkindOf(r)===s[0]}).length;
+          var sp = (toolObj.target_split||{})[s[0]];
+          var tail;
+          if(s[0]==="all"){
+            tail = rows.length+(kwGroups.length?(' 类 · '+kwGroups.length+' 个词包'):' 类');
+          }else if(s[0]==="kw" && kwGroups.length && cnt===0){
+            tail = kwGroups.length+' 个词包';
+            cnt = kwGroups.length;
+          }else if(kwGroups.length){
+            tail = cnt+' 类';
+          }else{
+            tail = cnt+' 类 · '+(sp?sp.pct+'%':'0%');
+          }
+          var off = (cnt===0) ? ' style="opacity:.4"' : '';
+          return '<span class="fchip'+(tkind===s[0]?" on":"")+'"'+off
+            +' onclick="adsSet(\'tkind\',\''+s[0]+'\')">'+s[1]
+            +'<span style="font-weight:400;opacity:.7"> · '+tail+'</span></span>';
+        }).join('')
+      +'</div>';
+  }
+
+  // ---- 结论（跟随当前筛选）
+  var bullets=[];
+  if(isX){
+    var wp=(toolObj.placements||[])[0];
+    if(wp) bullets.push('<b>版位：</b>「'+esc(wp.name)+'」后端成本最差 — '+adsBack(wp));
+    var wt=(toolObj.types||[])[0];
+    if(wt) bullets.push('<b>内容类型：</b>「'+esc(wt.name)+'」后端成本最差 — '+adsBack(wt));
+    var wg=(targetRows||[])[0];
+    if(wg) bullets.push('<b>定向'+(tkind!=="all"?('（'+TKIND_LABEL[tkind]+'）'):'')+'：</b>「'+esc(wg.name)+'」后端成本最差 — '+adsBack(wg));
+    // 关键词定向：词包结论（MELO 词包明细）
+    if(tkind==="kw" && kwGroups.length){
+      var big=kwGroups[0];
+      var worst=kwGroups.slice().sort(function(a,b){ return (b.cpuv||0)-(a.cpuv||0); })[0];
+      var topKw=(big.kws||[])[0];
+      bullets.push('<b>词包：</b>「'+esc(big.name)+'」消费最高 '+adsMoney(big.cost)+' / CPUV '+adsMoney(big.cpuv)+' / CTR '+adsPct(big.ctr)
+        +'；CPUV 最差为「'+esc(worst.name)+'」'+adsMoney(worst.cpuv));
+      if(topKw) bullets.push('<b>关键词：</b>「'+esc(topKw.name)+'」占该词包大头 — 消费 '+adsMoney(topKw.cost)+' / CPUV '+adsMoney(topKw.cpuv)+' / CTR '+adsPct(topKw.ctr));
+    }
+    var wm=(toolObj.materials||[])[0];
+    if(wm) bullets.push('<b>素材：</b>「'+esc(wm.name)+'」（'+esc(wm.sub||"—")+'）'+adsBack(wm)+'，建议优先优化或暂停');
+  }else{
+    var dm2=(toolObj.materials||[])[0];
+    if(dm2) bullets.push('<b>素材：</b>「'+esc(dm2.name)+'」（'+esc(dm2.sub||"—")+'）'+adsBackDy(dm2)+'，为当前后端+前端成本最差素材');
+  }
+  var uvGap = (isX && !(toolObj.uv>0))
+    ? '<div class="uvgap"><b>UV 口径提醒：</b>当前工具「'+esc(st.tool==="all"?"全部":st.tool)+'」未回传站外活跃 UV，CPUV 无法计算，后端成本已自动退回 CPC / CTR 判断。在聚光数据源补上 UV 列后，本页会自动恢复 CPUV 口径。</div>'
+    : '';
+  var concl='<section><h2>诊断结论<span class="hint">当前筛选：'+(isX?"红书 · ":"抖音 · ")+(st.tool==="all"?"全部工具":esc(st.tool))+' · 成本越低越好，标红行=最需优化</span></h2>'
+    +uvGap
+    +(bullets.length?'<ul class="adsul">'+bullets.map(function(b){return '<li>'+b+'</li>'}).join('')+'</ul>'
+                    :'<div class="empty">该筛选下暂无有效消耗数据。</div>')
+    +'</section>';
+
+  // ---- 工具对比（红书多工具时）
+  var toolSum='';
+  if(isX && toolList.length>1){
+    toolSum='<section><h2>工具对比<span class="hint">按 '+(d.tool_dim||"营销诉求")+' 拆分 · 消费/点击/UV/CPC/CPUV</span></h2>'
+      +'<table>'+sortTh(['工具','消费','展现量','点击量','UV','CPC','CPUV','消费占比'])+'<tbody>'
+      +toolList.map(function(t){
+        var allCost = d.all.cost||1;
+        var cpc = t.clicks? round2(t.cost/t.clicks) : null;
+        var cpuv = t.uv? round2(t.cost/t.uv) : null;
+        return '<tr><td class="metric">'+esc(t.key)+'</td><td>'+adsMoney(t.cost)+'</td><td>'+adsNum(t.views)+'</td><td>'+adsNum(t.clicks)+'</td><td>'+adsNum(t.uv)+'</td><td>'+adsMoney(cpc)+'</td><td class="metric">'+adsMoney(cpuv)+'</td><td>'+(Math.round(t.cost/allCost*1000)/10)+'%</td></tr>';
+      }).join('')
+      +'</tbody></table></section>';
+  }
+
+  // ---- 明细表
+  var detail='';
+  if(st.dim==="materials"){
+    if(isX){
+      detail=adsTable(["达人 / 笔记","内容方向","消费","展现","点击","UV","点击率","CPC","CPUV","最新一天 vs 前一天"],
+        rows.slice(0,20), function(r){
+          return '<td class="metric">'+esc(r.name)+'</td><td>'+esc(r.sub||"—")+'</td>'
+            +'<td>'+adsMoney(r.cost)+'</td><td>'+adsNum(r.views)+'</td><td>'+adsNum(r.clicks)+'</td>'
+            +'<td>'+adsNum(r.uv)+'</td><td>'+adsPct(r.ctr)+'</td><td>'+adsMoney(r.cpc)+'</td>'
+            +'<td class="metric">'+adsMoney(r.cpuv)+'</td>'
+            +'<td>'+dayCmp(r.days,[["cost","消费",null],["clicks","点击","up"]])+'</td>';
+        });
+    }else{
+      detail=adsTable(["达人 / 素材","素材类型","消耗","展示","点击","进店UV","点击率","CPC","UV成本","新增A3","CPA3","成交GMV","ROI","最新一天 vs 前一天"],
+        rows.slice(0,20), function(r){
+          return '<td class="metric">'+esc(r.name)+'</td><td>'+esc(r.sub||"—")+'</td>'
+            +'<td>'+adsMoney(r.cost)+'</td><td>'+adsNum(r.views)+'</td><td>'+adsNum(r.clicks)+'</td>'
+            +'<td>'+adsNum(r.uv)+'</td><td>'+adsPct(r.ctr)+'</td><td class="metric">'+adsMoney(r.cpc)+'</td><td>'+adsMoney(r.uv_cost)+'</td>'
+            +'<td>'+adsNum(r.a3)+'</td><td>'+adsMoney(r.cpa3)+'</td>'
+            +'<td>'+adsMoney(r.gmv)+'</td><td>'+(r.roi!=null?r.roi:"/")+'</td>'
+            +'<td>'+dayCmp(r.days,[["cost","消耗",null],["a3","新增A3","up"]])+'</td>';
+        });
+    }
+  }else if(st.dim==="targets"){
+    var parts=[];
+    if(targetRows.length){
+      var tCost=0,tViews=0,tClicks=0,tInter=0,tUV=0;
+      targetRows.forEach(function(r){tCost+=r.cost||0;tViews+=r.views||0;tClicks+=r.clicks||0;tInter+=r.inter||0;tUV+=r.uv||0;});
+      var tagStyle={kw:"background:#eaf1fd;color:#2b62b8",aud:"background:#eaf7ef;color:#1d7a48",none:"background:#f2f4f7;color:#7a8290"};
+      var tHtml='<table>'+sortTh(['定向 / 词包','类型','消费','展现量','点击量','UV','点击率','CPC','CPUV'])+'<tbody>';
+      targetRows.forEach(function(r,i){
+        var k=tkindOf(r);
+        tHtml+='<tr'+(i===0?' style="background:var(--red-bg)"':'')+'>'
+          +'<td class="metric">'+esc(r.name)+'</td>'
+          +'<td><span style="font-size:11px;padding:1px 7px;border-radius:10px;'+tagStyle[k]+'">'+TKIND_LABEL[k]+'</span></td>'
+          +'<td>'+adsMoney(r.cost)+'</td><td>'+adsNum(r.views)+'</td><td>'+adsNum(r.clicks)+'</td>'
+          +'<td>'+adsNum(r.uv)+'</td><td>'+adsPct(r.ctr)+'</td><td>'+adsMoney(r.cpc)+'</td>'
+          +'<td class="metric">'+adsMoney(r.cpuv)+'</td></tr>';
+      });
+      if(tkind!=="all"){
+        tHtml+='<tr class="sum" style="background:#f7f9fc;font-weight:600">'
+          +'<td class="metric">'+TKIND_LABEL[tkind]+' 总计（'+targetRows.length+' 类）</td><td>—</td>'
+          +'<td>'+adsMoney(tCost)+'</td><td>'+adsNum(tViews)+'</td><td>'+adsNum(tClicks)+'</td>'
+          +'<td>'+adsNum(tUV)+'</td><td>'+adsPct(tViews>0?round2(tClicks/tViews*100):null)+'</td>'
+          +'<td>'+adsMoney(tClicks>0?round2(tCost/tClicks):null)+'</td>'
+          +'<td>'+adsMoney(tUV>0?round2(tCost/tUV):null)+'</td></tr>';
+      }
+      tHtml+='</tbody></table>';
+      parts.push(tHtml);
+    }
+    // 关键词定向：MELO 的词包明细（词包 → 关键词）
+    if(tkind==="kw" && kwGroups.length){
+      parts.push('<div style="margin:14px 0 6px;font-size:12px;color:var(--tx2)">词包明细（'
+        +esc(d.kw.src||"")+'）：</div>'+kwTableHtml(kwGroups, 12, 10));
+    }
+    detail = parts.length ? parts.join('') : '<div class="empty">该定向类型下暂无消耗数据</div>';
+  }else{
+    detail=adsTable([dimLabel,"消费","展现量","点击量","互动量","UV","点击率","CPC","CPUV"], viewRows, function(r){
+      return '<td class="metric">'+esc(r.name)+'</td>'
+        +'<td>'+adsMoney(r.cost)+'</td><td>'+adsNum(r.views)+'</td><td>'+adsNum(r.clicks)+'</td>'
+        +'<td>'+adsNum(r.inter)+'</td><td>'+adsNum(r.uv)+'</td><td>'+adsPct(r.ctr)+'</td>'
+        +'<td>'+adsMoney(r.cpc)+'</td><td class="metric">'+adsMoney(r.cpuv)+'</td>';
+    });
+  }
+  var sortNote = isX ? "按 CPUV（站外活跃 UV 成本）由高到低，UV 缺失按 CPC 兜底" : "按 进店UV成本 / CPA3 / CPC 由高到低";
+  var hint = st.dim==="materials"
+    ? (isX?"消费 ≥ ¥100 · "+sortNote+" · 最多 20 条":"消耗 ≥ ¥100 · "+sortNote+" · 最多 20 条")
+    : (isX?(st.dim==="targets"
+        ? "按词包 / 人群包聚合 · "+sortNote+" · 首行标红；计数为「类」数，非关键词个数"
+        : "按 "+dimLabel+"聚合 · "+sortNote):"");
+  var detailSec='<section><h2>'+dimLabel+'效率<span class="hint">'+esc(hint)+'</span></h2>'+detail+'</section>';
+
+  // ---- 口径备注
+  var note='<div class="dmeta" style="margin-top:4px"><span class="dnote" style="display:block">'
+    +'口径：'+(isX?"红书聚光数据源（含 1% 淘联服务费）":"抖音投流底表")+' · 不去重，仅作效率对比参考；'
+    +(isX
+        ? (d.src&&d.src.indexOf("日报")>=0
+            ? '工具取自投流日报「种草定向数据源 / CID定向数据源」两张分表；定向按「精准定向」拆分（缺失时回退「人群包」，未填归「未标注」）。'
+            : '工具按「营销诉求」拆分：产品种草=种草、种草直达=CID；定向按「人群/词类」拆分（源表未填则归「未标注」）。')
+        : '工具按费用列拆分：竞价 / 热推；A3 / GMV 为整体口径，工具细分下仅呈现消耗与流量效率。抖音底表 A3 / 进店列存在累计值混入，成本类指标已做合理性校验，异常显示「/」，此时以 CPC / CPM 判断。')
+    +'</span></div>'
+    +(isX?'<div class="dmeta" style="margin-top:-6px"><span class="dnote" style="display:block">'
+        +'定向口径：<b>关键词定向</b>=品牌词 / 品类词 / 场景词 / 竞品词等词包；<b>人群包定向</b>=智能定向 / 智能扩量 / 高级 / 各类人群（品牌人群、直播人群、人群包-xxx 等）。'
+        +'<b>判断口径：红书后端成本看 CPUV（去重后小红星站外活跃行为 UV 成本）、抖音后端成本看进店 UV 成本，二者为第一观测指标；前端成本 CPC / CTR 仅作过程参考；UV 为 30 日归因去重口径。</b>'
+        +(d.kw?'关键词明细取自日报「达人×词包数据」（整体口径，不区分种草 / CID），关键词为聚光搜索投放的实际搜索词归集。':'聚光导出粒度只到「人群 / 词类」这一层，单个关键词明细需从聚光后台「关键词报告」导出；')
+        +'「未标注」为源表该列为空，占比高时定向结论仅覆盖已标注部分。'
+        +'</span></div>':'');
+
+  // ---- 数据时效提示（如抖音底表停更）
+  var warnTxt = (!isX && d.note)
+    ? '<div style="margin:10px 0 2px;padding:9px 12px;border-radius:8px;background:#fff8e6;border:1px solid #f4e0a8;color:#8a5a00;font-size:12px;line-height:1.65">数据时效提示：'+esc(d.note)+'</div>'
+    : '';
+
+  // ---- 关键词明细（词包 → 关键词）：选定「关键词定向」时并入上方表格，其余情况单列区块
+  var kwSec='';
+  if(isX && kwGroups.length && tkind!=="kw" && st.dim==="targets"){
+    var kwSum=kwGroups.reduce(function(s,g){return s+g.cost},0);
+    kwSec='<section><h2>关键词明细<span class="hint">词包 → 关键词 · 每词包最多 8 词 · '
+      +(d.kw.src?esc(d.kw.src):'')+'</span></h2>'
+      +'<div style="font-size:12px;color:var(--tx2);margin:-2px 0 8px">词包合计 '+adsMoney(kwSum)
+      +'，占红书消费 '+(Math.round(kwSum/(toolObj.cost||1)*1000)/10)+'% —— 仅覆盖搜索词包投放部分，与上方全量消费不同口径。</div>'
+      +kwTableHtml(kwGroups,6,8)+'</section>';
+  }
+
+  host.innerHTML = bar + tbar + warnTxt + concl + toolSum + detailSec + kwSec + note;
+}
+
+function round2(v){ return Math.round(v*100)/100 }
+
+function renderAds(id){
+  var D=window.DATA, v=document.getElementById("view");
+  var p=D.projects.filter(function(x){return x.id===id})[0];
+  if(!p){renderHome();return}
+  var A=p.ads||{};
+  var html='<div class="crumb"><a onclick="location.hash=\'#/p/'+p.id+'\'">‹ 返回 '+esc(p.name)+'</a></div>'
+    +'<div class="dhead"><h1>投流情况 · 投流诊断</h1><div class="chips"><span class="chip">'+esc(p.short)+'</span></div></div>'
+    +'<div class="dmeta"><span>数据源：'+esc([A.xhs&&A.xhs.src,A.dy&&A.dy.src].filter(Boolean).join(" ／ ")||"暂无可用投流底表")+'</span>'
+    +'<span>诊断链路：版位 → 内容类型 → 定向 → 素材 → 次日对比</span></div>'
+    +((A.xhs&&!A.dy)?'<div style="margin:2px 0 8px;padding:8px 12px;border-radius:8px;background:#fff8e6;border:1px solid #f4e0a8;color:#8a5a00;font-size:12px;line-height:1.65">抖音侧暂无当期素材级投流明细表（本项目 by素材看板 仅含 3-4月/618 归档数据，【26年双11】投流进度只有总消耗、无素材维度），故本页仅提供红书诊断。接入抖音投流日报后即可补上竞价 / 热推拆分。</div>':'');
+
+  if(!A.xhs&&!A.dy){
+    html+='<section><div class="empty">本项目暂无可用的投流平台数据底表。<br>接入口径：红书需聚光数据源（含版位 / 定向 / 达人 / 消费 / 展现 / 点击），抖音需投流数据源或 by素材看板。</div></section>';
+    v.innerHTML=html; window.scrollTo(0,0); return;
+  }
+  html+='<div id="adsBody"></div>';
+  html+='<div class="foot">优化动作建议：暂停 / 优化标红素材 → 次日回看「最新一天 vs 前一天」验证是否改善（数据每日 14:00 快照）。</div>';
+  v.innerHTML=html;
+  ADS_VIEW = {p:p, plat: A.xhs?"xhs":"dy", tool:"all", dim: A.xhs?"placements":"materials", tkind:"all"};
+  // 深链支持：?plat=xhs&tool=种草&dim=targets&tkind=kw 直达筛选状态（也用于自动化校验）
+  try{
+    var qs=new URLSearchParams(location.search);
+    var qp=qs.get("plat"), qt=qs.get("tool"), qd=qs.get("dim"), qk=qs.get("tkind");
+    if(qp==="xhs"&&A.xhs) ADS_VIEW.plat="xhs";
+    else if(qp==="dy"&&A.dy) ADS_VIEW.plat="dy";
+    if(qd){ var okd=(ADS_VIEW.plat==="xhs")?["placements","types","targets","materials"]:["materials"]; if(okd.indexOf(qd)>=0) ADS_VIEW.dim=qd; }
+    if(qt&&qt!=="all"){ var tl=(ADS_VIEW.plat==="xhs"?A.xhs.tools:A.dy.tools)||[]; if(tl.filter(function(t){return t.key===qt}).length) ADS_VIEW.tool=qt; }
+    if(qk&&["all","kw","aud","none"].indexOf(qk)>=0) ADS_VIEW.tkind=qk;
+  }catch(e){}
+  adsPaint();
+  window.scrollTo(0,0);
+}
+
+
+/* ============ 数据来源指南（文档 / sheet / 字段索引） ============ */
+var U_TOTAL = "https://my.feishu.cn/wiki/HODwwE6TkiuJgSk1dm5cCvfhnyc";
+var GUIDE = [
+ {id:"a2", name:"6118-WB联名（LARK A2）", tag:"较齐全",
+  note:"唯一同时有「红书聚光 + 抖音投流」双平台素材级数据源的项目，诊断页可双平台切换。",
+  docs:[
+   {t:"WB联名LAKR A2项目执行表", u:"https://my.feishu.cn/sheets/MXEfsp2QxhndWttKIc3cSr1JnOh", rows:[
+     {n:"项目进度看板（总）", id:"6f5e51", u:"预算 / 已消耗 / KPI / 执行周期", f:"总预算、已消耗、KPI 目标与达成、执行周期", fr:"人工维护"},
+     {n:"聚光数据源", id:"XFHnzj", u:"投流诊断 · 红书（版位 / 内容类型 / 定向 / 素材）", f:"营销诉求、日期、版位、单元、笔记、内容类型、定向、消费、展现、点击、互动、UV（AQ 列）", fr:"每日"},
+     {n:"抖音投流数据源", id:"hBHw01", u:"投流诊断 · 抖音素材效率", f:"素材名、日期、消耗、展示、点击、新增A3、进店UV", fr:"每日"},
+     {n:"❗️红书数据监测表（by达人-实时）", id:"svvhDg", u:"内容明细 · 红书（达人卡片）", f:"达人、内容方向、阅读/互动、进店成本、GMV、ROI", fr:"每日"},
+     {n:"❗️抖音数据监测表（by达人-实时）", id:"XmlcoA", u:"内容明细 · 抖音（达人卡片）", f:"达人、播放、互动、A3、GMV", fr:"每日"},
+     {n:"【整体】BYDAY监控看板", id:"JEHspx", u:"首页消耗趋势走势（近 14 天）", f:"日期、曝光/阅读、A3、进店UV、GMV", fr:"每日"},
+   ]},
+   {t:"【线上推广组Q4项目管理总表】", u:U_TOTAL, rows:[
+     {n:"【线上推广组Q4项目管理总表】", id:"azsIAV", u:"四项目预算 / 消耗 / KPI 汇总（首页四项合计）", f:"项目、预算、已消耗、KPI、周期", fr:"每周"},
+     {n:"6118WB联名-数据看板", id:"a32138", u:"出街条数（内容目标 / 实际出街）", f:"M 列 内容目标、N 列 实际出街、O 列 进度", fr:"每日"},
+   ]},
+  ],
+  gaps:["千川消耗仅取实际值（A2 未设 Q4 千川目标），如需进度条需补目标口径"]},
+
+ {id:"m2", name:"6302双11项目", tag:"缺抖音投流明细",
+  note:"红书侧齐全（含 UV / CPUV）；抖音只有内容明细，缺素材级投流表，故诊断页只提供红书。",
+  docs:[
+   {t:"LARK M2 项目执行总表", u:"https://my.feishu.cn/sheets/CeXCsR6DshunKRtkybwc1LcQnyJ", rows:[
+     {n:"【新】项目进度看板（总）", id:"x6GTXD", u:"预算 / 已消耗 / KPI / 执行周期", f:"总预算、已消耗、KPI、周期", fr:"人工维护"},
+     {n:"【双11】聚光数据源", id:"B9xUlJ", u:"投流诊断 · 红书（版位 / 内容类型 / 定向 / 素材）", f:"营销诉求、日期、版位、单元、内容类型、定向、消费、展现、点击、互动、UV（AU 列）", fr:"每日"},
+     {n:"【双11整体】内容进度", id:"kBWi2L", u:"出街目标（计划发布数）", f:"红书 / 抖音计划发布数", fr:"每周"},
+     {n:"3.发布内容表", id:"WPGJwp", u:"出街实际（批次=26年双十一批次、发布日期≥9.15 计数）", f:"批次、平台、内容名、发布日期、链接", fr:"每日"},
+     {n:"❗️【双11】红书数据监测表", id:"swnW3n", u:"内容明细 · 红书", f:"达人、内容方向、阅读/互动、进店成本、GMV", fr:"每日"},
+     {n:"❗️【双11】抖音数据监测表", id:"C4uaOC", u:"内容明细 · 抖音", f:"达人、播放、互动、A3、GMV", fr:"每日"},
+   ]},
+   {t:"【线上推广组Q4项目管理总表】", u:U_TOTAL, rows:[
+     {n:"6302双11-数据看板", id:"KpglM3", u:"出街条数", f:"M 列 内容目标、N 列 实际出街", fr:"每日"},
+   ]},
+  ],
+  gaps:["抖音素材级投流：by素材看板（UpMEJV）仅有 3-4月 / 618 归档数据，【26年双11】投流进度（abygpK）只有总消耗 → 需接入抖音投流日报后开启抖音侧诊断"]},
+
+ {id:"m3", name:"6303双11项目", tag:"缺抖音投流明细",
+  note:"与 6302 同构：红书聚光齐全，抖音缺素材级投流表。",
+  docs:[
+   {t:"猛玛LARK M3项目执行表", u:"https://ecnqyuepghu8.feishu.cn/wiki/VSQWwCpEfiqaj8kpGyfc6SMlnYe", rows:[
+     {n:"项目进度看板（总）", id:"czMIV7", u:"预算 / 已消耗 / KPI / 执行周期", f:"总预算、已消耗、KPI、周期", fr:"人工维护"},
+     {n:"聚光数据源", id:"7zpNPY", u:"投流诊断 · 红书（版位 / 内容类型 / 定向 / 素材）", f:"营销诉求、日期、版位、单元、内容类型、定向、消费、展现、点击、互动、UV（AT 列）", fr:"每日"},
+     {n:"【双十一】内容进度", id:"cluNmd", u:"出街目标（计划发布数）", f:"红书 / 抖音计划发布数", fr:"每周"},
+     {n:"3.发布内容", id:"pKVDty", u:"出街实际（批次=26年双十一批次、发布日期≥9.15 计数）", f:"批次、平台、内容名、发布日期、链接", fr:"每日"},
+     {n:"❗️红书数据监测表（双11）", id:"pKRGDz", u:"内容明细 · 红书", f:"达人、内容方向、阅读/互动、进店成本、GMV", fr:"每日"},
+     {n:"❗️抖音数据监测表（双十一）", id:"ymVGow", u:"内容明细 · 抖音", f:"达人、播放、互动、A3、GMV", fr:"每日"},
+   ]},
+   {t:"【线上推广组Q4项目管理总表】", u:U_TOTAL, rows:[
+     {n:"6303双11-数据看板", id:"affBD1", u:"出街条数", f:"M 列 内容目标、N 列 实际出街", fr:"每日"},
+   ]},
+  ],
+  gaps:["抖音素材级投流：同上，缺当期素材级投流底表","红书舆情/评论区监测仅 2 条记录，暂未纳入看板"]},
+
+ {id:"melo", name:"6201加推（MELO）", tag:"最齐全",
+  note:"唯一有「词包 → 关键词」明细的项目（达人×词包数据），定向维度可下钻到单词。",
+  docs:[
+   {t:"双十一MELOP1加推项目-云智", u:"https://my.feishu.cn/wiki/WquUweMkhit7y7kkKojcPTn3nre", rows:[
+     {n:"项目进度总看板", id:"BcXBk6", u:"预算 / KPI / 出街（红书，第 33 行）", f:"预算、已消耗、KPI、内容目标 M / 实际出街 N", fr:"人工维护"},
+     {n:"❗️红书数据监测表（by达人-实时）", id:"KsBFby", u:"内容明细 · 红书", f:"达人、内容方向、阅读/互动、进店成本、GMV、ROI", fr:"每日"},
+   ]},
+   {t:"【天下秀】猛玛MELO P1达人执行总表", u:"https://my.feishu.cn/wiki/Qx6UwmkYqiblNYkzTAUc0wnUnac", rows:[
+     {n:"项目进度总看板", id:"d08t6C", u:"出街（抖音，第 39-42 行）", f:"M 列 内容目标、N 列 实际出街、O 列 进度", fr:"每日"},
+   ]},
+   {t:"猛玛melo红书投流日报", u:"https://icnjgxyneu5e.feishu.cn/wiki/NUB1wJSy1iC3aGkjSAcctExJnbb", rows:[
+     {n:"种草定向数据源", id:"ww8Thn", u:"投流诊断 · 红书（种草工具）", f:"日期、版位、单元/笔记、内容类型、定向、消费、展现、点击、互动、UV（AQ 列）", fr:"每日"},
+     {n:"CID定向数据源", id:"N8ieaM", u:"投流诊断 · 红书（CID 工具，无 UV 回传）", f:"同上（该源 UV 列为空 → 后端成本退回 CPC）", fr:"每日"},
+     {n:"达人×词包数据", id:"VFiNks", u:"关键词明细（词包 → 关键词）", f:"词包、关键词、消费、展现、点击、互动、UV、CPC、CPUV、CTR", fr:"每日"},
+   ]},
+  ],
+  gaps:["抖音仅有出街数与周报文字，缺素材级投流与内容明细 → 抖音侧诊断暂缺"]},
+
+ {id:"all", name:"全项目共用", tag:"已接入",
+  note:"千川消耗与统一口径说明来自集团/推广组底表，四个项目共用。",
+  docs:[
+   {t:"直播间底表-投手", u:"https://dcnk1tugyip5.feishu.cn/wiki/UoJPwDmYRizc4jk4uitc55qznIb", rows:[
+     {n:"直播间底表（投手）", id:"8UnqwI", u:"Q4 千川消耗（6118 / 6201 / 6302 / 6303）", f:"日期、型号、消耗、素材类型（取 达人）", fr:"每日"},
+   ]},
+  ],
+  gaps:["千川目标为用户口径硬编码于取数脚本（6201 57.4万 / 6302 19.4万 / 6303 48.7万），后续如需变更请说明"]},
+];
+
+function gLocalRead(){ try{ return JSON.parse(localStorage.getItem("q4board_guide_v1")||"[]") }catch(e){ return [] } }
+function gLocalWrite(a){ try{ localStorage.setItem("q4board_guide_v1", JSON.stringify(a)) }catch(e){} }
+function gAdd(){
+  var t=document.getElementById("gTitle").value.trim();
+  var u=document.getElementById("gUrl").value.trim();
+  if(!t||!u){ alert("请至少填写「文档标题」和「链接」"); return }
+  var a=gLocalRead();
+  a.push({proj:document.getElementById("gProj").value, t:t, u:u,
+          s:document.getElementById("gSheet").value.trim(),
+          use:document.getElementById("gUse").value.trim()});
+  var y=window.scrollY; gLocalWrite(a); renderGuide(); window.scrollTo(0,y);
+}
+function gDel(pid, i){
+  var a=gLocalRead(), k=-1, cnt=0;
+  for(var j=0;j<a.length;j++){ if(a[j].proj===pid){ if(cnt===i){k=j;break} cnt++ } }
+  if(k>=0){ var y=window.scrollY; a.splice(k,1); gLocalWrite(a); renderGuide(); window.scrollTo(0,y) }
+}
+function gExport(){
+  var a=gLocalRead();
+  if(!a.length){ alert("本机暂无补充记录"); return }
+  var txt=JSON.stringify(a,null,1);
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ alert("已复制 JSON，直接粘贴发给项目同学即可") },
+      function(){ window.prompt("复制下面 JSON：", txt) });
+  } else { window.prompt("复制下面 JSON：", txt) }
+}
+function gClear(){ if(confirm("清空本机所有补充记录？")){ gLocalWrite([]); renderGuide() } }
+
+function renderGuide(){
+  var v=document.getElementById("view");
+  var local=gLocalRead();
+  var html='<div class="crumb"><a onclick="location.hash=\'#/\'">‹ 返回总览</a></div>'
+   +'<header class="top"><h1>数据来源指南</h1><span class="sub">看板引用的飞书文档 / sheet / 字段 / 更新频率</span></header>'
+   +'<div class="textblock">本页把看板每个数字的「出处」列清楚：哪份文档、哪个 sheet、读了哪些列、多久更新一次。'
+   +'项目侧若新增或调整底表，可在页尾「补充数据源索引」里登记（只存在本机浏览器），导出后同步给维护同学写进看板。</div>';
+
+  GUIDE.forEach(function(g){
+    html+='<section><h2>'+esc(g.name)+'<span class="hint">'+esc(g.tag)+'</span></h2>';
+    if(g.note) html+='<div class="gdesc">'+esc(g.note)+'</div>';
+    g.docs.forEach(function(d){
+      html+='<div class="gdoc"><div class="gdt"><a href="'+esc(d.u)+'" target="_blank" rel="noopener">'+esc(d.t)+' ↗</a>'
+        +'<span class="gdc">'+d.rows.length+' 个 sheet</span></div>'
+        +'<table class="gt"><thead><tr><th>Sheet</th><th>引用用途</th><th>读取字段 / 列</th><th>更新</th></tr></thead><tbody>'
+        +d.rows.map(function(r){
+            return '<tr><td class="gs"><span class="sname">'+esc(r.n)+'</span><span class="sid">'+esc(r.id||"")+'</span></td>'
+              +'<td>'+esc(r.u)+'</td><td class="gf">'+esc(r.f||"—")+'</td><td class="gfr">'+esc(r.fr||"—")+'</td></tr>';
+          }).join('')
+        +'</tbody></table></div>';
+    });
+    var loc=local.filter(function(x){return x.proj===g.id});
+    if(loc.length){
+      html+='<div class="gdoc glocal"><div class="gdt"><span class="gdt2">本机补充</span><span class="gdc">未写入看板</span></div>'
+        +'<table class="gt"><thead><tr><th>文档 / sheet</th><th>引用用途</th><th>链接</th><th></th></tr></thead><tbody>'
+        +loc.map(function(x,li){
+            return '<tr><td class="gs"><span class="sname">'+esc(x.t)+'</span><span class="sid">'+esc(x.s||"")+'</span></td>'
+              +'<td>'+esc(x.use||"—")+'</td>'
+              +'<td><a href="'+esc(x.u)+'" target="_blank" rel="noopener">打开 ↗</a></td>'
+              +'<td style="text-align:right"><a class="gdel" onclick="gDel(\''+g.id+'\','+li+')">删除</a></td></tr>';
+          }).join('')
+        +'</tbody></table></div>';
+    }
+    if(g.gaps&&g.gaps.length){
+      html+='<div class="gapbox"><b>待补 / 说明</b><ul>'+g.gaps.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>';
+    }
+    html+='</section>';
+  });
+
+  html+='<section><h2>补充数据源索引<span class="hint">本机临时登记，导出后可同步进看板</span></h2>'
+   +'<div class="gform">'
+   +'<label>归属项目<select id="gProj">'+GUIDE.map(function(g){return '<option value="'+g.id+'">'+esc(g.name)+'</option>'}).join('')+'</select></label>'
+   +'<label>文档标题<input id="gTitle" placeholder="如：6302 抖音投流日报"></label>'
+   +'<label>文档链接<input id="gUrl" placeholder="https://...feishu.cn/wiki/..."></label>'
+   +'<label>Sheet 名称 / ID<input id="gSheet" placeholder="如：投流日报 / dOBF9h"></label>'
+   +'<label class="wide">引用用途<input id="gUse" placeholder="如：抖音素材级投流（消耗/A3/进店UV）"></label>'
+   +'</div>'
+   +'<div class="gbtns"><button class="btn primary" onclick="gAdd()">添加到本机</button>'
+   +'<button class="btn" onclick="gExport()">导出 JSON</button>'
+   +'<button class="btn" onclick="gClear()">清空本机补充</button></div>'
+   +'<div class="gdesc" style="margin-top:10px">填完点「导出 JSON」复制，把内容发给我，我会写进看板的取数配置与索引页；只在本机添加不会影响看板数据。</div>'
+   +'</section>';
+
+  html+='<div class="foot">引用口径：数值均来自上表底表的原始单元格，未做二次加工；出街数按「批次 + 发布日期」过滤，投流按「日期 ≥ 9.15」过滤。</div>';
+  v.innerHTML=html;
+  window.scrollTo(0,0);
+}
+
+function route(){
+  var h=location.hash||"#/";
+  if(h==="#/guide"){renderGuide();return}
+  var m=h.match(/^#\/p\/([^\/]+)\/ads$/);
+  if(m){renderAds(m[1]);return}
+  m=h.match(/^#\/p\/([^\/]+)\/content$/);
+  if(m){renderContent(m[1]);return}
+  m=h.match(/^#\/p\/(.+)$/);
+  if(m){renderDetail(m[1]);return}
+  renderHome();
+}
+window.addEventListener("hashchange",route);
+
+/* ============ 口令门 ============ */
+var HAS_STORE = (function(){try{sessionStorage.setItem("__t","1");sessionStorage.removeItem("__t");return true}catch(e){return false}})();
+function unlock(){
+  if(HAS_STORE) sessionStorage.setItem("q4board_ok","1");
+  document.getElementById("gate").style.display="none";
+  document.getElementById("app").style.display="";
+  if(!window.DATA){boot().then(route).catch(function(){route()})}
+  else{route()}
+}
+function tryUnlock(){
+  var val=document.getElementById("pwd").value.trim();
+  var check = (window.crypto&&crypto.subtle)?sha256(val):Promise.resolve(val===PASS_PLAIN?"match":"no");
+  check.then(function(h){
+    if(h===PASS_SHA256||h==="match"){unlock()}
+    else{document.getElementById("err").textContent="口令不正确，请重试";document.getElementById("pwd").value="";document.getElementById("pwd").focus()}
+  }).catch(function(){
+    if(val===PASS_PLAIN){unlock()}else{document.getElementById("err").textContent="口令不正确，请重试"}
+  });
+}
+document.getElementById("btn").addEventListener("click",tryUnlock);
+document.getElementById("pwd").addEventListener("keydown",function(e){if(e.key==="Enter")tryUnlock()});
+
+function boot(){
+  if(window.__DATA__){window.DATA=window.__DATA__;return Promise.resolve()}
+  return fetch("data.json?ts="+Date.now()).then(function(r){
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return r.json();
+  }).then(function(d){window.DATA=d}).catch(function(e){
+    document.getElementById("view").innerHTML=
+      '<section><h2>数据加载失败</h2><div class="textblock">未能读取数据（'+esc(String(e))+'）。</div></section>';
+  });
+}
+
+if(!HAS_STORE||sessionStorage.getItem("q4board_ok")!=="1"){ /* 停在口令门 */ } else { unlock() }
+</script>
+</body>
+</html>
