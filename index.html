@@ -1329,8 +1329,19 @@ window.addEventListener("hashchange",route);
 
 /* ============ 口令门 ============ */
 var HAS_STORE = (function(){try{sessionStorage.setItem("__t","1");sessionStorage.removeItem("__t");return true}catch(e){return false}})();
-function unlock(){
-  if(HAS_STORE) sessionStorage.setItem("q4board_ok","1");
+function b64d(s){var b=atob(s),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+function decData(pwd){
+  var e=window.__ENC__;
+  if(!e||!pwd||!(window.crypto&&crypto.subtle))return Promise.reject(new Error("no-enc-or-pwd"));
+  var te=new TextEncoder();
+  return crypto.subtle.importKey("raw",te.encode(pwd),"PBKDF2",false,["deriveKey"])
+    .then(function(km){return crypto.subtle.deriveKey({name:"PBKDF2",salt:b64d(e.s),iterations:150000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"])})
+    .then(function(k){var all=b64d(e.d);return crypto.subtle.decrypt({name:"AES-GCM",iv:all.slice(0,12)},k,all.slice(12))})
+    .then(function(buf){return JSON.parse(new TextDecoder().decode(buf))});
+}
+function unlock(pwd){
+  window.__PWD=pwd||"";
+  if(HAS_STORE){sessionStorage.setItem("q4board_ok","1");if(pwd)sessionStorage.setItem("q4board_pwd",pwd)}
   document.getElementById("gate").style.display="none";
   document.getElementById("app").style.display="";
   if(!window.DATA){boot().then(route).catch(function(){route()})}
@@ -1340,10 +1351,10 @@ function tryUnlock(){
   var val=document.getElementById("pwd").value.trim();
   var check = (window.crypto&&crypto.subtle)?sha256(val):Promise.resolve(val===PASS_PLAIN?"match":"no");
   check.then(function(h){
-    if(h===PASS_SHA256||h==="match"){unlock()}
+    if(h===PASS_SHA256||h==="match"){unlock(val)}
     else{document.getElementById("err").textContent="口令不正确，请重试";document.getElementById("pwd").value="";document.getElementById("pwd").focus()}
   }).catch(function(){
-    if(val===PASS_PLAIN){unlock()}else{document.getElementById("err").textContent="口令不正确，请重试"}
+    if(val===PASS_PLAIN){unlock(val)}else{document.getElementById("err").textContent="口令不正确，请重试"}
   });
 }
 document.getElementById("btn").addEventListener("click",tryUnlock);
@@ -1351,6 +1362,17 @@ document.getElementById("pwd").addEventListener("keydown",function(e){if(e.key==
 
 function boot(){
   if(window.__DATA__){window.DATA=window.__DATA__;return Promise.resolve()}
+  if(window.__ENC__){
+    return decData(window.__PWD).then(function(d){
+      window.DATA=d;
+    }).catch(function(e){
+      if(HAS_STORE)sessionStorage.removeItem("q4board_ok");
+      document.getElementById("gate").style.display="";
+      document.getElementById("app").style.display="none";
+      document.getElementById("err").textContent="数据解密失败，请重新输入口令";
+      return new Promise(function(){}); /* 挂起，阻止 route() 在无数据时渲染 */
+    });
+  }
   return fetch("data.json?ts="+Date.now()).then(function(r){
     if(!r.ok) throw new Error("HTTP "+r.status);
     return r.json();
@@ -1360,7 +1382,7 @@ function boot(){
   });
 }
 
-if(!HAS_STORE||sessionStorage.getItem("q4board_ok")!=="1"){ /* 停在口令门 */ } else { unlock() }
+if(!HAS_STORE||sessionStorage.getItem("q4board_ok")!=="1"){ /* 停在口令门 */ } else { unlock(HAS_STORE?(sessionStorage.getItem("q4board_pwd")||""):"") }
 </script>
 </body>
 </html>
