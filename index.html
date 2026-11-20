@@ -518,11 +518,11 @@ function renderDetail(id){
    // 发布内容入口
    +'<section><h2>发布内容明细<span class="hint">按平台 → 内容类型 → 达人卡片，点进去看单条数据</span></h2>'
    +'<div class="entry">'
-   +'<div class="e" onclick="location.hash=\'#/p/'+p.id+'/content\'">'
+   +'<div class="e" onclick="location.hash=\'#/p/'+p.id+'/content/dy\'">'
    +'<div class="l"><span class="plat-dot dy">抖音</span><div><div class="nm">抖音 · '+(cd?cd.actual+' / '+cd.target+' 条':nDY+' 条')+'</div>'
    +'<div class="ct">'+(nDY?esc(contentOldCount(p,"douyin")?'含老素材 '+contentOldCount(p,"douyin")+' 条':'内容+投流+GMV 明细'):(cd?(cd.actual>0?('已出街 '+cd.actual+' 条（目标 '+cd.target+' 条）· 单条明细待补'):('目标 '+cd.target+' 条 · 尚未开始出街')):'本期暂无出街内容'))+'</div></div></div>'
    +'<span class="arw">›</span></div>'
-   +'<div class="e" onclick="location.hash=\'#/p/'+p.id+'/content\'">'
+   +'<div class="e" onclick="location.hash=\'#/p/'+p.id+'/content/xhs\'">'
    +'<div class="l"><span class="plat-dot xhs">红书</span><div><div class="nm">红书 · '+(cx?cx.actual+' / '+cx.target+' 条':nXHS+' 条')+'</div>'
    +'<div class="ct">'+(nXHS?'点击率 / 互动率 / GMV / ROI / 进店成本':(cx?(cx.actual>0?('已出街 '+cx.actual+' 条（目标 '+cx.target+' 条）· 单条明细待补'):('目标 '+cx.target+' 条 · 尚未开始出街')):'本期暂无出街内容'))+'</div></div></div>'
    +'<span class="arw">›</span></div>'
@@ -559,7 +559,7 @@ function renderDetail(id){
   html+='</section>';
 
   html+='<div class="two-col">'
-   +'<section><h2>周度进展 · '+esc(p.weekly_progress_label||"最新")+'<span class="hint">来自 Q4 项目管理总表</span></h2><div class="textblock">'+esc(p.weekly_progress||"本周暂无")+'</div></section>'
+   +'<section><h2>周度进展 · '+esc(p.weekly_progress_label||"最新")+'<span class="hint">来自 '+esc(p.weekly_src||"Q4 项目管理总表")+'</span></h2><div class="textblock">'+esc(p.weekly_progress||"本周暂无")+'</div></section>'
    +'<section><h2>'+esc(p.weekly_focus_label||"本周重点工作")+'</h2><div class="textblock">'+esc(p.weekly_focus||"—")+'</div></section>'
    +'</div>';
 
@@ -673,22 +673,30 @@ function cardHtml(it, plat){
     +'</div></article>';
 }
 
-function renderContent(id){
+function renderContent(id, platOnly){
   var D=window.DATA, v=document.getElementById("view");
   var p=D.projects.filter(function(x){return x.id===id})[0];
   if(!p){renderHome();return}
 
+  var pick=platOnly==="dy"?"douyin":(platOnly==="xhs"?"xhs":"");
+  var cnt=pick?(((p.content||{})[pick]||[]).length):((p.content.douyin.length)+(p.content.xhs.length));
+  var tabs=[{k:"",l:"全部"},{k:"dy",l:"抖音"},{k:"xhs",l:"红书"}].map(function(t){
+    var on=(t.k===platOnly);
+    return '<span class="chip" style="cursor:pointer'+(on?';background:var(--blue);color:#fff':'')+'"'
+      +' onclick="location.hash=\'#/p/'+p.id+'/content'+(t.k?'/'+t.k:'')+'\'">'+t.l+'</span>';
+  }).join("");
+
   var html='<div class="crumb"><a onclick="location.hash=\'#/p/'+p.id+'\'">‹ 返回 '+esc(p.name)+'</a></div>'
-    +'<div class="dhead"><h1>发布内容明细</h1>'
+    +'<div class="dhead"><h1>发布内容明细'+(pick?' · '+(pick==="douyin"?"抖音":"红书"):"")+'</h1>'
     +'<div class="chips"><span class="chip">'+esc(p.short)+'</span>'
-    +'<span class="chip">'+((p.content.douyin.length)+(p.content.xhs.length))+' 条</span></div></div>'
+    +'<span class="chip">'+cnt+' 条</span>'+tabs+'</div></div>'
     +'<div class="dmeta"><span>按 平台 → 内容类型 → 达人 归组</span>'
     +'<span>任务商品成交率 &gt; 40% 标黄</span>'
     +'<a href="'+esc(p.sheet_url)+'" target="_blank" rel="noopener">打开飞书执行表 ↗</a>'
     +'<span class="dnote">内容类型与达人按 CPA3（红书按 进店成本）由低到高排序；该页面中的成本均为不去重数据，只作为内容效率对比参考值。</span></div>';
 
   var total=0;
-  ["douyin","xhs"].forEach(function(plat){
+  (pick?[pick]:["douyin","xhs"]).forEach(function(plat){
     var items=(p.content&&p.content[plat])||[];
     if(!items.length) return;
     total+=items.length;
@@ -1319,8 +1327,8 @@ function route(){
   if(h==="#/guide"){renderGuide();return}
   var m=h.match(/^#\/p\/([^\/]+)\/ads$/);
   if(m){renderAds(m[1]);return}
-  m=h.match(/^#\/p\/([^\/]+)\/content$/);
-  if(m){renderContent(m[1]);return}
+  m=h.match(/^#\/p\/([^\/]+)\/content(?:\/(dy|xhs))?$/);
+  if(m){renderContent(m[1], m[2]||"");return}
   m=h.match(/^#\/p\/(.+)$/);
   if(m){renderDetail(m[1]);return}
   renderHome();
